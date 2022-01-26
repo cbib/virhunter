@@ -1,3 +1,5 @@
+# VirHunter
+
 **VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and classifies previously assembled contigs to identify potential viral, host and bacterial (contamination) sequences in RNAseq sequencing samples. 
 
 # LICENSE MIT
