@@ -103,44 +103,20 @@ def subset_df(df_path, org, thr=0.8, final_df_size=20000):
 def train(
         ds_path,
         out_path,
-        plant,
         length,
         test_nn_paths,
         test_ml_paths,
-        exp_name="None",
         n_cpus=1,
         epochs=10,
         batch_size=256,
         n_runs=1,
-        job_type="train",
         random_seed=None,
-        run_finish=True,
         train_only_clf=False,
         train_only_clf_nn_path=None,
 ):
-    run = wandb.init(
-        project="virhunter",
-        entity="gregoruar",
-        job_type=job_type,
-        dir=out_path,
-        save_code=True,
-    )
 
-    cf = run.config
-    # variable parameters
-    cf.exp_name = exp_name
-    cf.epochs = epochs
-    cf.length = length
-    cf.plant = plant
-    cf.ds_path = ds_path
-    cf.batch_size = batch_size
-    # constant parameters, not advised to be changed
-    cf.rundir = run.dir
-    # if none, generating random seed
-    if random_seed is None:
-        random.seed(a=random_seed)
-        random_seed = random.randrange(1000000)
-    cf.rs = random_seed
+    assert Path(out_path).is_dir(), 'out_path was not provided correctly'
+
     # initializing random generator with the random seed
     random.seed(a=random_seed)
 
@@ -180,7 +156,7 @@ def train(
             models_list = zip(["model_5", "model_7", "model_10"], [model_5, model_7, model_10])
 
             for model_, model_obj in models_list:
-                model = model_obj.model(cf.length)
+                model = model_obj.model(length)
                 model.summary()
                 model.fit(x=train_gen,
                           validation_data=val_gen,
@@ -194,13 +170,13 @@ def train(
                           callbacks=[wandb.keras.WandbCallback()],
                           batch_size=batch_size,
                           verbose=2)
-                model.save_weights(Path(run.dir, f"{model_}_it_{n_}.h5"))
+                model.save_weights(Path(out_path, f"{model_}_it_{n_}.h5"))
                 print(f'finished training of {n_} iteration of {model_} network')
 
             weights = [
-                Path(run.dir, f"model_5_it_{n_}.h5"),
-                Path(run.dir, f"model_7_it_{n_}.h5"),
-                Path(run.dir, f"model_10_it_{n_}.h5"),
+                Path(out_path, f"model_5_it_{n_}.h5"),
+                Path(out_path, f"model_7_it_{n_}.h5"),
+                Path(out_path, f"model_10_it_{n_}.h5"),
             ]
         print('predictions for test dataset')
         for org_lab, org_ds in zip(['virus', 'plant', 'bacteria'], test_nn_paths):
@@ -212,13 +188,13 @@ def train(
                 batch_size=256
             )
             name = f"pred-{org_lab}_it_{n_}.csv"
-            saving_path = Path(run.dir, name)
+            saving_path = Path(out_path, name)
             df.to_csv(saving_path)
 
         # subsetting predictions
-        df_v = subset_df(Path(run.dir, f"pred-virus_it_{n_}.csv"), 'vir', thr=0.8)
-        df_pl = subset_df(Path(run.dir, f"pred-plant_it_{n_}.csv"), 'plant', thr=1.0)
-        df_b = subset_df(Path(run.dir, f"pred-bacteria_it_{n_}.csv"), 'bact', thr=1.0)
+        df_v = subset_df(Path(out_path, f"pred-virus_it_{n_}.csv"), 'vir', thr=0.8)
+        df_pl = subset_df(Path(out_path, f"pred-plant_it_{n_}.csv"), 'plant', thr=1.0)
+        df_b = subset_df(Path(out_path, f"pred-bacteria_it_{n_}.csv"), 'bact', thr=1.0)
 
         print('training ml classifier')
         df_train, _ = train_ml.merge_ds(path_ds_v=df_v,
@@ -227,65 +203,32 @@ def train(
                                         fract=0.2,
                                         rs=random_seed, loaded=True)
         df_train = df_train.append(_, sort=False)
-        _ = train_ml.fit_clf(df_train, Path(run.dir, f"RF_n{n_}.joblib"), random_seed)
+        _ = train_ml.fit_clf(df_train, Path(out_path, f"RF_n{n_}.joblib"), random_seed)
 
         print('predictions on real datasets')
         for ds_p in test_ml_paths:
             df_out = pr.predict(weights, length, ds_p, n_cpus=n_cpus, batch_size=batch_size)
-            df_out = pr.ensemble_predict(df_out, Path(run.dir, f"RF_n{n_}.joblib"), aggregate=False)
-            pred_file = Path(run.dir, f"{Path(ds_p).stem}_n{n_}.csv")
+            df_out = pr.ensemble_predict(df_out, Path(out_path, f"RF_n{n_}.joblib"), aggregate=False)
+            pred_file = Path(out_path, f"{Path(ds_p).stem}_n{n_}.csv")
             df_out.to_csv(pred_file)
         # changing random seed for the next run
         random_seed += 1
-    if run_finish:
-        run.finish()
-        return run.dir
-    else:
-        return run
+    return out_path
+
 
 
 if __name__ == "__main__":
     # plant = "peach"
     # plant = 'tomato'
-    plant = 'sugar_beet_reduced_viruses'
-    plant_samples = 'sugar_beet'
-    # plant_samples = 'peach'
-    # length = 500
+    plant = 'peach'
+    plant_samples = 'peach'
     for length in [500, 1000]:
         train_ds_path = f"/home/gsukhorukov/classifier/data/train/encoded_train_{plant}_{length}.hdf5"
         test_ml_paths = [
-            # '/home/gsukhorukov/real_test/n_r_rc/LIB1_TGCGGCGT-TACCGAGG-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/n_r_rc/LIB2_CATAATAC-CGTTAGAA-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/n_r_rc/LIB3_GATCTATC-AGCCTCAT-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/tomato_Ayoub/Trinity_Tomato20_1.fasta',
-            # '/home/gsukhorukov/real_test/tomato_Ayoub/Trinity_Tomato_20_2.fasta',
-            # '/home/gsukhorukov/real_test/tomato_Ayoub/Trinity_dsRNA.fasta',
-            # '/home/gsukhorukov/real_test/grapevine_inextvir/TT2017-1_TAATGCGC-AGGATAGG (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/grapevine_inextvir/I30-2_CTGAAGCT-AGGCTATA (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/grapevine_inextvir/I30-2_TGACCA (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/grapevine_inextvir/I33_CAGATC (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/grapevine_inextvir/I33_CTGAAGCT-TCAGAGCC (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/real_test/grapevine_inextvir/TT2017-1_ATGTCA (paired, trimmed pairs) contig list.fa',
-            '/home/gsukhorukov/real_test/sugar_beet_inextvir/305S (paired, trimmed pairs) contig list.fa',
-            '/home/gsukhorukov/real_test/sugar_beet_inextvir/333A (paired, trimmed pairs) contig list.fa',
-            '/home/gsukhorukov/real_test/sugar_beet_inextvir/428A (paired, trimmed pairs) contig list.fa',
-            # '/home/gsukhorukov/classifier/data/train/samples_test_rfc/seqs_grapevine_sampled_1000_10000.fasta',
-            # '/home/gsukhorukov/classifier/data/train/samples_test_rfc/seqs_peach_sampled_1000_10000.fasta',
-            # '/home/gsukhorukov/classifier/data/train/samples_test_rfc/seqs_sugar_beet_sampled_1000_10000.fasta',
-            # '/home/gsukhorukov/classifier/data/train/samples_test_rfc/seqs_bacteria_sampled_1000_10000.fasta',
-            # '/home/gsukhorukov/classifier/data/train/samples_test_rfc/seqs_virus_sampled_1000_10000.fasta',
+            '/home/gsukhorukov/real_test/n_r_rc/LIB1_TGCGGCGT-TACCGAGG-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa',
+            '/home/gsukhorukov/real_test/n_r_rc/LIB2_CATAATAC-CGTTAGAA-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa',
+            '/home/gsukhorukov/real_test/n_r_rc/LIB3_GATCTATC-AGCCTCAT-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa',
         ]
-        # for contigs testing
-        # test_ml_paths = []
-        # for fragment_length in [1000, 1500, 2000, 3000, 4500, 6000]:
-        #     test_ml_paths.append(f"/home/gsukhorukov/classifier/data/train/samples_contigs/seqs_virus_sampled_{fragment_length}_10000.fasta")
-        #     test_ml_paths.append(f"/home/gsukhorukov/classifier/data/train/samples_contigs/seqs_{plant}_sampled_{fragment_length}_10000.fasta")
-        #     test_ml_paths.append(f"/home/gsukhorukov/classifier/data/train/samples_contigs/seqs_bacteria_sampled_{fragment_length}_10000.fasta")
-        #     for mut_rate in [0.05, 0.1, 0.15]:
-        #         test_ml_paths.append(f"/home/gsukhorukov/classifier/data/train/samples_contigs/seqs_virus_sampled_mut_{mut_rate}_{fragment_length}_10000.fasta")
-        #         test_ml_paths.append(f"/home/gsukhorukov/classifier/data/train/samples_contigs/seqs_{plant}_sampled_mut_{mut_rate}_{fragment_length}_10000.fasta")
-        #         test_ml_paths.append(f"/home/gsukhorukov/classifier/data/train/samples_contigs/seqs_bacteria_sampled_mut_{mut_rate}_{fragment_length}_10000.fasta")
-        # order virus plant bacteria. it is important for the function
         test_nn_paths = [
             f'/home/gsukhorukov/classifier/data/train/samples_train_rfc/seqs_virus_sampled_{length}_100000.fasta',
             f'/home/gsukhorukov/classifier/data/train/samples_train_rfc/seqs_{plant_samples}_sampled_{length}_100000.fasta',
@@ -293,10 +236,8 @@ if __name__ == "__main__":
         ]
         train(
             ds_path=train_ds_path,
-            out_path="/home/gsukhorukov/classifier",
-            plant=plant,
+            out_path="",
             length=length,
-            exp_name=f'{length}_{plant}_',
             n_cpus=4,
             epochs=10,
             batch_size=256,
