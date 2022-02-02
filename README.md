@@ -6,6 +6,7 @@
 
 Copyright (c) 2022 
     Grigorii Sukhorukov (1,2)  (grigorii.sukhorukov@u-bordeaux.fr)
+    
     Macha Nikolski (1,2)    (macha.nikolski@u-bordeaux.fr) 
     
         (1) CBiB - University of Bordeaux,
