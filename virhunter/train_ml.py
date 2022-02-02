@@ -16,10 +16,7 @@ plt.rcParams.update({'font.size': 20,
 
 
 def load_ds(path_ds, label, family=None, loaded=False):
-    if loaded:
-        df = path_ds
-    else:
-        df = pd.read_csv(path_ds, sep=',')
+    df = path_ds if loaded else pd.read_csv(path_ds, sep=',')
     df = df.drop(['length', 'fragment'], 1)
     df["label"] = label
     if family is not None:
@@ -129,12 +126,11 @@ def calc_confm(df, clf, rs):
     # y_pred = np.vectorize(mapping.get)(y_pred)
     y_test = np.array(df_reshuffled["label"])
     y_test = np.append(y_test, [0, 1, 2])
-    confm = confusion_matrix(
+    return confusion_matrix(
         y_test, y_pred,
         labels = [0, 1, 2],
         normalize = 'true'
     ).round(decimals=3)
-    return confm
 
 
 def plot_confm_fams(df, families, clf, save_path, rs, ):

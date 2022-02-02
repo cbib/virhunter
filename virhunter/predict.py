@@ -11,9 +11,9 @@ from Bio import SeqIO
 import pandas as pd
 import ray
 import wandb
-from utils import preprocess as pp
+from virhunter.utils import preprocess as pp
 from pathlib import Path
-from models import model_5, model_7, model_10
+from virhunter.models import model_5, model_7, model_10
 from joblib import load
 
 

@@ -1,0 +1,26 @@
+- prepare_ds:
+    path_virus: /home/gsukhorukov/virhunter/test/10000_viruses.fasta
+    path_plant: /home/gsukhorukov/virhunter/test/peach_chr2.fna
+    path_bact: /home/gsukhorukov/virhunter/test/bacteria.fasta
+    out_path: /home/gsukhorukov/virhunter/test_out
+    fragment_length: 1000
+    n_cpus: 1
+    random_seed: 5
+- sample_test:
+    path_virus: /home/gsukhorukov/virhunter/test/10000_viruses.fasta
+    path_plant: /home/gsukhorukov/virhunter/test/peach_chr2.fna
+    path_bact: /home/gsukhorukov/virhunter/test/bacteria.fasta
+    out_path: /home/gsukhorukov/virhunter/test_out
+    fragment_length: 1000
+    n_cpus: 1
+    random_seed: 5
+
+- train:
+    ds_path: /home/gsukhorukov/virhunter/test_out
+    out_path: /home/gsukhorukov/virhunter/test_out
+    test_nn_path: /home/gsukhorukov/virhunter/test_out
+    fragment_length: 1000
+    n_cpus: 4
+    epochs: 1
+    batch_size: 256
+    random_seed: 5
