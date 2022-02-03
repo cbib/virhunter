@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Credits: Grigorii Sukhorukov, Macha Nikolski
+
 import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq

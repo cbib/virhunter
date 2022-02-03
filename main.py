@@ -1,5 +1,8 @@
-import os
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Credits: Grigorii Sukhorukov, Macha Nikolski
 
+import os
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
 # loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed

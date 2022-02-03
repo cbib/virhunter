@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Credits: Grigorii Sukhorukov, Macha Nikolski
+
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
