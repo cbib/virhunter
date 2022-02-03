@@ -71,7 +71,7 @@ We provide a toy dataset to illustrate the training process downloadable with th
 
 `bash download_test.sh`
 
-With `example_config.yaml` filled for you, you should just launch consecutively 4 commands:
+With `example_config.yaml` filled for you, you should just run the following 4 commands:
 
 `python main.py prepare_ds example_config.yaml`
 
@@ -86,8 +86,6 @@ With `example_config.yaml` filled for you, you should just launch consecutively 
 If you plan to train VirHunter on GPU, please use `virhunter_gpu.yml` for dependencies installation.
 Additionally, you have to change `os.environ["CUDA_VISIBLE_DEVICES"] = ""` line in main.py by giving the number of
 GPU to use. If your system has only one GPU, likely, it will be `"0"`.
-
-
 
 
 # LICENSE MIT
