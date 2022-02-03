@@ -60,12 +60,14 @@ The command to run predictions is then:
 
 `python main.py predict config.yaml`
 
-## Retraining VirHunter
+## Training your own model
 
-You can also retrain VirHunter. Retraining consists of preparation of the training dataset from fasta file,
-preparation of dataset for Random Forest classifier, training of neural networks and RF classifier and, 
-finally, prediction.
-This procedure can be tested with the test example, downloadable with the line:
+You can train your own model, for example for a specific host species. Training requires to
+- prepare the training dataset for the neural network module from fasta file
+- prepare the training dataset for Random Forest classifier module
+- train both modules 
+
+We provide a toy dataset to illustrate the training process downloadable with the line:
 
 `bash download_test.sh`
 
