@@ -68,5 +68,13 @@ def predict(ds_path, weights_path, out_path, length, n_cpus=3, batch_size=256):
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
     print('Exporting predictions to csv file')
     df = pd.DataFrame(out_table)
+    # ML predictions
+    clf = load(Path(weights_path, "RF.joblib"))
+    X = df[
+        ["pred_plant_5", "pred_vir_5", "pred_plant_7", "pred_vir_7", "pred_plant_10", "pred_vir_10", ]]
+    y_pred = np.array(clf.predict(X))
+    mapping = {0: "plant", 1: "virus", 2: "bacteria"}
+    df["predicted"] = np.vectorize(mapping.get)(y_pred)
     pred_file = Path(out_path, f"{Path(ds_path).stem}_predicted.csv")
     df.to_csv(pred_file)
+
