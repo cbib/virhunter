@@ -1,6 +1,86 @@
 # VirHunter
 
-**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and classifies previously assembled contigs to identify potential viral, host and bacterial (contamination) sequences in RNAseq sequencing samples. 
+**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) 
+and classifies previously assembled contigs to identify potential viral, host and 
+bacterial (contamination) sequences in RNAseq sequencing samples. 
+
+## System Requirements
+VirHunter installation requires an Unix environment with [python 3.8](http://www.python.org/). 
+It was tested under Linux environment.
+
+In order to run VirHunter your installation should include conda. 
+If you are installing it for the first time, we suggest you to use 
+a lightweight [miniconda](https://docs.conda.io/en/latest/miniconda.html).
+         
+## Installation 
+
+The full installation process should take less than 15 minutes on a standard computer.
+
+Clone the repository from [github](https://github.com/cbib/virhunter)
+
+
+`git clone https://github.com/cbib/virhunter.git`
+
+Go to the VirHunter root folder
+
+`cd virhunter/`
+
+You will install dependencies with Conda.
+Firstly, you have to create the environment from the `virhunter.yml` file. 
+The installation may take around 500 Mb of drive space and take about 15 minutes. 
+
+`conda env create -f virhunter.yml`
+
+
+Then activate the environment:
+
+`conda activate virhunter`
+
+## Using VirHunter for prediction
+
+VirHunter was fully trained for fragment sizes n = {500, 1000} for 3 hosts (peach, grapevine, sugar beet). 
+The weights are available for download with script `download_weights.sh`. 
+
+`bash download_weights.sh`
+
+Then to launch the VirHunter you have to fill in the `config.yaml`. You need only to fill the `predict` part.
+- `ds_path` - path to your sequence file in fasta format
+- `weights_path` - folder, containing trained model weights.  If you want to use weights of the model trained on peach 1000bp fragments, you should put `weights/peach/1000`. 
+- `out_path` - path to save results
+- `fragment_length` - 500 or 1000
+- `n_cpus` - number of cpus you want to use.
+
+Once the `config.yaml` is filled in you can launch prediction with:
+
+`python main.py predict config.yaml`
+
+## Retraining VirHunter
+
+You can also retrain VirHunter. Retraining consists of preparation of the training dataset from fasta file,
+preparation of dataset for Random Forest classifier, training of neural networks and RF classifier and, 
+finally, prediction.
+This procedure can be tested with the test example, downloadable with the line:
+
+`bash download_test.sh`
+
+With `example_config.yaml` filled for you, you should just launch consecutively 4 commands:
+
+`python main.py prepare_ds example_config.yaml`
+
+`python main.py sample_test example_config.yaml`
+
+`python main.py train example_config.yaml`
+
+`python main.py predict example_config.yaml`
+
+## VirHunter on GPU
+
+If you plan to train VirHunter on GPU, please use `virhunter_gpu.yml` for dependencies installation.
+Additionally, you have to change `os.environ["CUDA_VISIBLE_DEVICES"] = ""` line in main.py by giving the number of
+GPU to use. If your system has only one GPU, likely, it will be `"0"`.
+
+
+
 
 # LICENSE MIT
 

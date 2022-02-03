@@ -5,8 +5,8 @@ dependencies:
   - _libgcc_mutex=0.1=main
   - biopython=1.78=py38h7b6447c_0
   - blas=1.0=mkl
-  - ca-certificates=2021.7.5=h06a4308_1
-  - certifi=2021.5.30=py38h06a4308_0
+  - ca-certificates=2021.10.26=h06a4308_2
+  - certifi=2021.10.8=py38h06a4308_2
   - cudatoolkit=10.1.243=h6bb024c_0
   - cudnn=7.6.5=cuda10.1_0
   - cycler=0.10.0=py38_0
@@ -38,17 +38,15 @@ dependencies:
   - libxcb=1.14=h7b6447c_0
   - libxml2=2.9.10=hb55368b_3
   - lz4-c=1.9.3=h295c915_1
-  - matplotlib=3.3.4=py38h06a4308_0
   - matplotlib-base=3.3.4=py38h62a2d02_0
   - mkl=2020.2=256
   - mkl-service=2.3.0=py38he904b0f_0
   - mkl_fft=1.2.0=py38h23d657b_0
   - mkl_random=1.1.1=py38h0573a6f_0
   - ncurses=6.2=he6710b0_1
-  - numpy-base=1.19.2=py38hfa32c7d_0
   - olefile=0.46=py_0
   - openjpeg=2.4.0=h3ad879b_0
-  - openssl=1.1.1k=h27cfd23_0
+  - openssl=1.1.1m=h7f8727e_0
   - pandas=1.2.1=py38ha9443f7_0
   - pcre=8.45=h295c915_0
   - pillow=8.3.1=py38h2c7a002_0
@@ -123,10 +121,7 @@ dependencies:
     - py-spy==0.3.4
     - pyasn1==0.4.8
     - pyasn1-modules==0.2.8
-    - pydot==1.4.2
-    - pydotplus==2.0.2
     - pyrsistent==0.17.3
-    - python-graphviz==0.17
     - pyyaml==5.4
     - ray==1.1.0
     - redis==3.5.3
@@ -137,14 +132,14 @@ dependencies:
     - shortuuid==1.0.1
     - smmap==3.0.5
     - subprocess32==3.5.4
-    - tensorboard==2.4.1
+    - tensorboard==2.8.0
+    - tensorboard-data-server==0.6.1
     - tensorboard-plugin-wit==1.8.0
+    - tensorflow==2.3.2
     - tensorflow-estimator==2.3.0
-    - tensorflow-gpu==2.3.2
     - termcolor==1.1.0
     - typing-extensions==3.7.4.3
     - urllib3==1.26.2
-    - wandb==0.12.2
     - watchdog==0.10.4
     - werkzeug==1.0.1
     - wrapt==1.12.1
