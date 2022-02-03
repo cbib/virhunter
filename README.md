@@ -42,7 +42,7 @@ VirHunter takes as input a fasta file with assembled contigs and outputs a predi
 
 Befor running VirHunter you have to fill in the config.yaml. You need only to fill the predict part with the following information:
 - `ds_path` - path to the input file with contigs in fasta format
-- `weights_path` - folder containing trained model weights 
+- `weights_path` - folder containing weights for a trained model  
 - `out_path` - path to the ouput folder to save results
 - `fragment_length` - 500 or 1000
 - `n_cpus` - number of cpus you want to use
@@ -76,7 +76,6 @@ The `example_config.yaml` file is provided to work with this toy dataset. Runnin
 `python main.py sample_test example_config.yaml`
 
 `python main.py train example_config.yaml`
-
 
 ## VirHunter on GPU
 
