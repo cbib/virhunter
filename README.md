@@ -77,7 +77,6 @@ With `example_config.yaml` filled for you, you should just run the following 4 c
 
 `python main.py train example_config.yaml`
 
-`python main.py predict example_config.yaml`
 
 ## VirHunter on GPU
 
