@@ -1,8 +1,6 @@
 # VirHunter
 
-**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) 
-and classifies previously assembled contigs to identify potential viral, host and 
-bacterial (contamination) sequences in RNAseq sequencing samples. 
+**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and a Random Forest Classifier to identify viruses in sequening datasets. More precisely, VirHunter classifies previously assembled contigs as viral, host and bacterial (contamination). 
 
 ## System Requirements
 VirHunter installation requires an Unix environment with [python 3.8](http://www.python.org/). 
