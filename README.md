@@ -67,15 +67,15 @@ You can train your own model, for example for a specific host species. Training 
 
 We provide a toy dataset to illustrate the training process downloadable with the line:
 
-`bash download_test.sh`
+`bash download_toy_dataset.sh`
 
 The `example_config.yaml` file is provided to work with this toy dataset. Running the following 3 commands will prepare the datasets and train the models:
 
-`python main.py prepare_ds example_config.yaml`
+`python main.py prepare_ds toy_config.yaml`
 
-`python main.py sample_test example_config.yaml`
+`python main.py sample_test toy_config.yaml`
 
-`python main.py train example_config.yaml`
+`python main.py train toy_config.yaml`
 
 ## VirHunter on GPU
 
