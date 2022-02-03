@@ -1,16 +1,15 @@
 import os
 import tensorflow as tf
-print(tf.config.list_physical_devices('GPU'))
 import numpy as np
 from sklearn.utils import shuffle
 import h5py
 import random
 from pathlib import Path
-from virhunter.utils.batch_loader import BatchLoader, BatchGenerator
 import pandas as pd
+from virhunter.utils.batch_loader import BatchLoader, BatchGenerator
 from virhunter.models import model_5, model_7, model_10
 import virhunter.predict as pr
-import virhunter.train_ml
+from virhunter.train_ml import merge_ds, fit_clf
 
 
 def fetch_batches(fragments, fragments_rc, labels, random_seed, batch_size, train_fr):
@@ -114,7 +113,6 @@ def train(
 
     for model_, model_obj in models_list:
         model = model_obj.model(length)
-        model.summary()
         model.fit(x=train_gen,
                   validation_data=val_gen,
                   epochs=epochs,
@@ -151,11 +149,11 @@ def train(
     df_pl = subset_df(Path(out_path, "pred-plant.csv"), 'plant', thr=1.0)
     df_b = subset_df(Path(out_path, "pred-bacteria.csv"), 'bact', thr=1.0)
     print('training ml classifier')
-    df_train, _ = train_ml.merge_ds(path_ds_v=df_v,
+    df_train, _ = merge_ds(path_ds_v=df_v,
                                     path_ds_pl=df_pl,
                                     path_ds_b=df_b,
                                     fract=0.2,
                                     rs=random_seed, loaded=True)
     df_train = df_train.append(_, sort=False)
-    _ = train_ml.fit_clf(df_train, Path(out_path, "RF.joblib"), random_seed)
+    _ = fit_clf(df_train, Path(out_path, "RF.joblib"), random_seed)
     return out_path

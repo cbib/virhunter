@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
 # loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -13,8 +13,8 @@ from virhunter.prepare_ds import prepare_ds
 from virhunter.utils.sample_test import sample_test
 
 
-def main(task):
-    with open("example_config.yaml", "r") as yamlfile:
+def main(task, config):
+    with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     if task == "prepare_ds":
         prepare_ds(
@@ -44,9 +44,17 @@ def main(task):
             length=cf[2]["train"]["fragment_length"],
             n_cpus=cf[2]["train"]["n_cpus"],
             epochs=cf[2]["train"]["epochs"],
-            batch_size=cf[2]["train"]["batch_size"],
             random_seed=cf[2]["train"]["random_seed"],
         )
+    elif task == "predict":
+        predict(
+            ds_path=cf[3]["predict"]["ds_path"],
+            out_path=cf[3]["predict"]["out_path"],
+            weights_path=cf[3]["predict"]["weights_path"],
+            length=cf[3]["predict"]["fragment_length"],
+            n_cpus=cf[3]["predict"]["n_cpus"],
+        )
+
     elif task == "help":
         print("help")
 

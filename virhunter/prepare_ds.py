@@ -1,10 +1,4 @@
 import os
-
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
-# loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 from Bio import SeqIO
 import random
 import ray
@@ -12,7 +6,6 @@ import numpy as np
 from virhunter.utils import preprocess as pp
 from sklearn.utils import shuffle
 import h5py
-import wandb
 from pathlib import Path
 
 
@@ -140,29 +133,3 @@ def prepare_ds_complex(
     # saving one-hot encoded fragments
     pp.storing_encoded(all_encoded, all_encoded_rc, all_labs,
                     Path(out_path, f"encoded_train_{name}_{fragment_length}.hdf5"))
-
-
-if __name__ == "__main__":
-
-    path_viruses = '/home/gsukhorukov/vir_db/plant-virus_all_2021-10-26.fasta'
-    path_plant_chl = "/home/gsukhorukov/plant_db/grapevine/grapevine_chl.fasta"
-    path_plant_genome = "/home/gsukhorukov/plant_db/grapevine/grapevine_genome.fasta"
-    path_plant_cds = "/home/gsukhorukov/plant_db/grapevine/grapevine_cds.fasta"
-
-    path_bact = "/home/gsukhorukov/bact_db/refseq_2021-10-29"
-    out_path = "/home/gsukhorukov/classifier/data/train"
-
-    n_cpus = 8
-    for fragment_length in 500, 1000:
-        sl_wind_step = int(fragment_length / 2)
-        prepare_ds_complex(
-            path_virus=path_viruses,
-            path_plant_genome=path_plant_genome,
-            path_plant_cds=path_plant_cds,
-            path_plant_chl=path_plant_chl,
-            out_path=out_path,
-            fragment_length=fragment_length,
-            path_bact=path_bact,
-            n_cpus=n_cpus,
-            random_seed=5,
-        )
