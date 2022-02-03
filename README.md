@@ -67,7 +67,7 @@ We provide a toy dataset to illustrate the training process downloadable with th
 
 `bash download_toy_dataset.sh`
 
-The `example_config.yaml` file is provided to work with this toy dataset. Running the following 3 commands will prepare the datasets and train the models:
+The `toy_config.yaml` file is provided to work with this toy dataset. Running the following 3 commands will prepare the datasets and train the models:
 
 `python main.py prepare_ds toy_config.yaml`
 
