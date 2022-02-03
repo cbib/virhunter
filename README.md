@@ -38,23 +38,21 @@ Then activate the environment:
 
 ## Using VirHunter for prediction
 
-To run VirHunter you can use the already pre-trained models. 
-Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
-for fragment sizes 500 and 1000. 
-Weights for these models are available for download with script `download_weights.sh`.
+VirHunter takes as input a fasta file with assembled contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
-`bash download_weights.sh`
-
-Once the weights are downloaded, if you want for example to use the weights of the model 
-trained on peach 1000bp fragments, you should add in the `config.yaml` file 
-the path to `$DIR/weights/peach/1000` where `$DIR` is the location where you have downloaded the weights.
-
-To launch the prediction in the `config.yaml`. You need only to fill the `predict` part.
+Befor running VirHunter you have to fill in the config.yaml. You need only to fill the predict part with the following information:
 - `ds_path` - path to your sequence file in fasta format
 - `weights_path` - folder, containing trained model weights.  If you want to use weights of the model trained on peach 1000bp fragments, you should put `weights/peach/1000`. 
 - `out_path` - path to save results
 - `fragment_length` - 500 or 1000
 - `n_cpus` - number of cpus you want to use.
+
+To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
+for fragment sizes 500 and 1000. Weights for these models are available for download with script `download_weights.sh`.
+
+`bash download_weights.sh`
+
+Once the weights are downloaded, if you want for example to use the weights of the model trained on peach 1000bp fragments, you should add in the `config.yaml` file the path to `$DIR/weights/peach/1000` where `$DIR` is the location where you have downloaded the weights.
 
 The command to run predictions is then:
 
