@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Credits: Grigorii Sukhorukov, Macha Nikolski
-
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
+# loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import fire
+import yaml
 import tensorflow as tf
 import numpy as np
 from Bio import SeqIO
 import pandas as pd
 import ray
-from virhunter.utils import preprocess as pp
+from utils import preprocess as pp
 from pathlib import Path
-from virhunter.models import model_5, model_7, model_10
+from models import model_5, model_7, model_10
 from joblib import load
 
 
-def predict(ds_path, weights_path, out_path, length, n_cpus=3, batch_size=256):
+def predict(ds_path, weights_path, length, n_cpus=3, batch_size=256):
     print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
@@ -75,6 +80,21 @@ def predict(ds_path, weights_path, out_path, length, n_cpus=3, batch_size=256):
     y_pred = np.array(clf.predict(X))
     mapping = {0: "plant", 1: "virus", 2: "bacteria"}
     df["predicted"] = np.vectorize(mapping.get)(y_pred)
-    pred_file = Path(out_path, f"{Path(ds_path).stem}_predicted.csv")
+    return df
+
+
+def launch_predict(config):
+    with open(config, "r") as yamlfile:
+        cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
+    df = predict(
+        ds_path=cf[0]["predict"]["ds_path"],
+        weights_path=cf[0]["predict"]["weights_path"],
+        length=cf[0]["predict"]["fragment_length"],
+        n_cpus=cf[0]["predict"]["n_cpus"],
+    )
+    pred_file = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted.csv")
     df.to_csv(pred_file)
 
+
+if __name__ == '__main__':
+    fire.Fire(launch_predict)

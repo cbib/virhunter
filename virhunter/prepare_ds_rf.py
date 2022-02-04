@@ -2,18 +2,17 @@
 # -*- coding: utf-8 -*-
 # Credits: Grigorii Sukhorukov, Macha Nikolski
 
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import fire
+import yaml
 from Bio import SeqIO
 from pathlib import Path
 import ray
 from sklearn.utils import shuffle
-import virhunter.utils.preprocess as pp
+import utils.preprocess as pp
 import numpy as np
 
 
-def sample_test(
+def prepare_ds_rf(
         path_virus,
         path_plant,
         path_bact,
@@ -97,3 +96,21 @@ def sample_test_complex(
     assert len(seqs) == n_frags
     out_path_seqs = Path(out_path, f"seqs_bacteria_sampled_{fragment_length}_{n_frags}.fasta")
     SeqIO.write(seqs, out_path_seqs, "fasta")
+
+
+def launch_prepare_ds_rf(config):
+    with open(config, "r") as yamlfile:
+        cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
+    prepare_ds_rf(
+        path_virus=cf[2]["prepare_ds_rf"]["path_virus"],
+        path_plant=cf[2]["prepare_ds_rf"]["path_plant"],
+        path_bact=cf[2]["prepare_ds_rf"]["path_bact"],
+        out_path=cf[2]["prepare_ds_rf"]["out_path"],
+        fragment_length=cf[2]["prepare_ds_rf"]["fragment_length"],
+        n_cpus=cf[2]["prepare_ds_rf"]["n_cpus"],
+        random_seed=cf[2]["prepare_ds_rf"]["random_seed"],
+    )
+
+
+if __name__ == '__main__':
+    fire.Fire(launch_prepare_ds_rf)

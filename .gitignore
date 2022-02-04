@@ -1,6 +1,6 @@
 # Test out folder
-test_out/
-test/
+toy_dataset/
+toy_dataset_out/
 weights/
 
 # Byte-compiled / optimized / DLL files

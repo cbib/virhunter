@@ -4,8 +4,7 @@
     out_path:
     fragment_length:
     n_cpus:
-
-- prepare_ds:
+- prepare_ds_nn:
     path_virus:
     path_plant:
     path_bact:
@@ -13,8 +12,7 @@
     fragment_length:
     n_cpus:
     random_seed:
-
-- sample_test:
+- prepare_ds_rf:
     path_virus:
     path_plant:
     path_bact:
@@ -22,12 +20,16 @@
     fragment_length:
     n_cpus:
     random_seed:
-
-- train:
+- train_nn:
     ds_path:
     out_path:
-    test_nn_path:
+    fragment_length:
+    epochs:
+    random_seed:
+- train_rf:
+    nn_weights_path:
+    ds_rf_path:
+    out_path:
     fragment_length:
     n_cpus:
-    epochs:
     random_seed:

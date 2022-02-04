@@ -1,33 +1,35 @@
-- prepare_ds:
-    path_virus: /home/gsukhorukov/virhunter/test/viruses.fasta
-    path_plant: /home/gsukhorukov/virhunter/test/host.fasta
-    path_bact: /home/gsukhorukov/virhunter/test/bacteria.fasta
-    out_path: /home/gsukhorukov/virhunter/test_out
-    fragment_length: 1000
-    n_cpus: 1
-    random_seed: 5
-
-- sample_test:
-    path_virus: /home/gsukhorukov/virhunter/test/viruses.fasta
-    path_plant: /home/gsukhorukov/virhunter/test/host.fasta
-    path_bact: /home/gsukhorukov/virhunter/test/bacteria.fasta
-    out_path: /home/gsukhorukov/virhunter/test_out
-    fragment_length: 1000
-    n_cpus: 1
-    random_seed: 5
-
-- train:
-    ds_path: /home/gsukhorukov/virhunter/test_out
-    out_path: /home/gsukhorukov/virhunter/test_out
-    test_nn_path: /home/gsukhorukov/virhunter/test_out
+- predict:
+    ds_path: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
+    weights_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
     fragment_length: 1000
     n_cpus: 4
+- prepare_ds_nn:
+    path_virus: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
+    path_plant: /home/gsukhorukov/virhunter/toy_dataset/host.fasta
+    path_bact: /home/gsukhorukov/virhunter/toy_dataset/bacteria.fasta
+    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    fragment_length: 1000
+    n_cpus: 1
+    random_seed: 5
+- prepare_ds_rf:
+    path_virus: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
+    path_plant: /home/gsukhorukov/virhunter/toy_dataset/host.fasta
+    path_bact: /home/gsukhorukov/virhunter/toy_dataset/bacteria.fasta
+    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    fragment_length: 1000
+    n_cpus: 1
+    random_seed: 5
+- train_nn:
+    ds_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    fragment_length: 1000
     epochs: 1
     random_seed: 5
-
-- predict:
-    ds_path: /home/gsukhorukov/virhunter/test/viruses.fasta
-    weights_path: /home/gsukhorukov/virhunter/test_out
-    out_path: /home/gsukhorukov/virhunter/test_out
+- train_rf:
+    nn_weights_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    ds_rf_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
     fragment_length: 1000
     n_cpus: 4
+    random_seed: 5

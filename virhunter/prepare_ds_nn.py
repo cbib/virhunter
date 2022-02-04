@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 # Credits: Grigorii Sukhorukov, Macha Nikolski
 
-import os
+import fire
+import yaml
 from Bio import SeqIO
 import random
 import ray
 import numpy as np
-from virhunter.utils import preprocess as pp
+from utils import preprocess as pp
 from sklearn.utils import shuffle
 import h5py
 from pathlib import Path
 
 
-def prepare_ds(
+def prepare_ds_nn(
         path_virus,
         path_plant,
         path_bact,
@@ -137,3 +138,21 @@ def prepare_ds_complex(
     # saving one-hot encoded fragments
     pp.storing_encoded(all_encoded, all_encoded_rc, all_labs,
                     Path(out_path, f"encoded_train_{name}_{fragment_length}.hdf5"))
+
+
+def launch_prepare_ds_nn(config):
+    with open(config, "r") as yamlfile:
+        cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
+    prepare_ds_nn(
+        path_virus=cf[1]["prepare_ds_nn"]["path_virus"],
+        path_plant=cf[1]["prepare_ds_nn"]["path_plant"],
+        path_bact=cf[1]["prepare_ds_nn"]["path_bact"],
+        out_path=cf[1]["prepare_ds_nn"]["out_path"],
+        fragment_length=cf[1]["prepare_ds_nn"]["fragment_length"],
+        n_cpus=cf[1]["prepare_ds_nn"]["n_cpus"],
+        random_seed=cf[1]["prepare_ds_nn"]["random_seed"],
+    )
+
+
+if __name__ == '__main__':
+    fire.Fire(launch_prepare_ds_nn)
