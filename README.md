@@ -17,30 +17,39 @@ The full installation process should take less than 15 minutes on a standard com
 
 Clone the repository from [github](https://github.com/cbib/virhunter)
 
-
-`git clone https://github.com/cbib/virhunter.git`
+```shell
+git clone https://github.com/cbib/virhunter.git
+```
 
 Go to the VirHunter root folder
 
-`cd virhunter/`
+```shell
+cd virhunter/
+```
 
 
 ## Installing dependencies with Conda
 
 Firstly, you have to create the environment from the `envs/environment.yml` file. 
-The installation may take around 500 Mb of drive space and take about 15 minutes. 
+The installation may take around 500 Mb of drive space. 
 
-`conda env create -f envs/environment.yml`
+```shell
+conda env create -f envs/environment.yml
+```
 
 Then activate the environment:
 
-`conda activate virhunter`
+```shell
+conda activate virhunter
+```
 
 ## Installing dependencies with pip
 
 If you don't have Conda installed in your system, you can install python dependencies via pip program:
 
-`pip install -r envs/environment.txt`
+```shell
+pip install -r envs/requirements.txt
+```
 
 ## Using VirHunter for prediction
 
@@ -51,15 +60,17 @@ Before running VirHunter you have to fill in the config.yaml. You need to fill i
 
 To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
 for fragment sizes 500 and 1000. Weights for these models can be downloaded with script `download_weights.sh`.
-
-`bash scripts/download_weights.sh`
-
+```shell
+bash scripts/download_weights.sh
+```
 Once the weights are downloaded, if you want for example to use the weights of the model trained on peach 1000bp fragments, 
 you should add in the `configs/config.yaml` file the path to `$DIR/weights/peach/1000` where `$DIR` is the location where you have downloaded the weights.
 
 The command to run predictions is then:
 
-`python virhunter/predict.py configs/config.yaml`
+```shell
+python virhunter/predict.py configs/config.yaml
+```
 
 ## Training your own model
 
@@ -70,14 +81,16 @@ You can train your own model, for example for a specific host species. Training 
 
 We provide a toy dataset to illustrate the training process downloadable with the line:
 
-`bash scripts/download_toy_dataset.sh`
+```shell
+bash scripts/download_toy_dataset.sh
+```
 
 The `configs/toy_config.yaml` file is provided to work with this toy dataset. 
 Running the following 4 commands will prepare the datasets and train the models:
 
 `python virhunter/prepare_ds_nn.py configs/toy_config.yaml`
 
-`python virhunter/prepare_ds_nn.py configs/toy_config.yaml`
+`python virhunter/prepare_ds_rf.py configs/toy_config.yaml`
 
 `python virhunter/train_nn.py configs/toy_config.yaml`
 
