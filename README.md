@@ -51,12 +51,24 @@ If you don't have Conda installed in your system, you can install python depende
 pip install -r envs/requirements.txt
 ```
 
+## Testing installation of the VirHunter
+
+You can test that VirHunter was successfully installed on the toy dataset we provide.
+
+First you have to download the toy dataset
+```shell
+bash scripts/download_toy_dataset.sh
+```
+Then launch the script for testing training and prediction python scripts of VirHunter
+```shell
+bash scripts/test_installation_toy_dataset.sh
+```
 ## Using VirHunter for prediction
 
 When being used for prediction of the viral contigs, 
 VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
-Before running VirHunter you have to fill in the config.yaml. You need to fill in only the `predict` part.
+Before running VirHunter you have to fill in the config.yaml. For the prediction you need to fill in only the `predict` part.
 
 To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
 for fragment sizes 500 and 1000. Weights for these models can be downloaded with script `download_weights.sh`.
@@ -64,7 +76,7 @@ for fragment sizes 500 and 1000. Weights for these models can be downloaded with
 bash scripts/download_weights.sh
 ```
 Once the weights are downloaded, if you want for example to use the weights of the model trained on peach 1000bp fragments, 
-you should add in the `configs/config.yaml` file the path to `$DIR/weights/peach/1000` where `$DIR` is the location where you have downloaded the weights.
+you should add in the `configs/config.yaml` file the path to `weights/peach/1000`.
 
 The command to run predictions is then:
 
@@ -75,30 +87,20 @@ python virhunter/predict.py configs/config.yaml
 ## Training your own model
 
 You can train your own model, for example for a specific host species. Training requires execution of the following steps:
-- prepare the training dataset for the neural network module from fasta files
-- prepare the training dataset for Random Forest classifier module
-- train both modules 
+- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`
+- prepare the training dataset for Random Forest classifier module with `prepare_ds_rf.py`
+- train neural network with `train_nn.py`
+- train Random Forest with `train_rf.py`
 
-We provide a toy dataset to illustrate the training process downloadable with the line:
-
+To execute these steps you must first fill in the `config.yaml` and then launch the scripts consecutively providing them 
+with the config file like this:
 ```shell
-bash scripts/download_toy_dataset.sh
+python virhunter/prepare_ds_nn.py configs/config.yaml
 ```
 
-The `configs/toy_config.yaml` file is provided to work with this toy dataset. 
-Running the following 4 commands will prepare the datasets and train the models:
 
-`python virhunter/prepare_ds_nn.py configs/toy_config.yaml`
 
-`python virhunter/prepare_ds_rf.py configs/toy_config.yaml`
-
-`python virhunter/train_nn.py configs/toy_config.yaml`
-
-`python virhunter/train_rf.py configs/toy_config.yaml`
-
-`python virhunter/predict.py configs/toy_config.yaml`
-
-## VirHunter config composition
+## VirHunter config.yaml description
 
 `predict`:
 - `ds_path`: path to the input file with contigs in fasta format
