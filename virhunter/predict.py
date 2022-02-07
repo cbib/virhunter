@@ -19,7 +19,7 @@ from models import model_5, model_7, model_10
 from joblib import load
 
 
-def predict_nn(ds_path, weights_path, length, n_cpus=3, batch_size=256):
+def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
     print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
@@ -66,7 +66,7 @@ def predict_nn(ds_path, weights_path, length, n_cpus=3, batch_size=256):
 
     print('Starting sequence prediction')
     for model, s in zip([model_5.model(length), model_7.model(length), model_10.model(length)], [5, 7, 10]):
-        model.load_weights(Path(weights_path, f"model_{s}.h5"))
+        model.load_weights(Path(nn_weights_path, f"model_{s}.h5"))
         prediction = model.predict([test_encoded, test_encoded_rc], batch_size)
         out_table[f"pred_plant_{s}"].extend(list(prediction[..., 0]))
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
@@ -91,7 +91,7 @@ def launch_predict(config):
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     df = predict_nn(
         ds_path=cf[0]["predict"]["ds_path"],
-        weights_path=cf[0]["predict"]["weights_path"],
+        nn_weights_path=cf[0]["predict"]["nn_weights_path"],
         length=cf[0]["predict"]["fragment_length"],
         n_cpus=cf[0]["predict"]["n_cpus"],
     )
