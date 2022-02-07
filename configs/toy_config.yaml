@@ -1,35 +1,35 @@
 - predict:
-    ds_path: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
-    weights_path: /home/gsukhorukov/virhunter/toy_dataset_out
-    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    ds_path: toy_dataset/viruses.fasta
+    weights_path: toy_dataset_out
+    out_path: toy_dataset_out
     fragment_length: 1000
     n_cpus: 1
 - prepare_ds_nn:
-    path_virus: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
-    path_plant: /home/gsukhorukov/virhunter/toy_dataset/host.fasta
-    path_bact: /home/gsukhorukov/virhunter/toy_dataset/bacteria.fasta
-    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    path_virus: toy_dataset/viruses.fasta
+    path_plant: toy_dataset/host.fasta
+    path_bact: toy_dataset/bacteria.fasta
+    out_path: toy_dataset_out
     fragment_length: 1000
     n_cpus: 1
     random_seed: 5
 - prepare_ds_rf:
-    path_virus: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
-    path_plant: /home/gsukhorukov/virhunter/toy_dataset/host.fasta
-    path_bact: /home/gsukhorukov/virhunter/toy_dataset/bacteria.fasta
-    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    path_virus: toy_dataset/viruses.fasta
+    path_plant: toy_dataset/host.fasta
+    path_bact: toy_dataset/bacteria.fasta
+    out_path: toy_dataset_out
     fragment_length: 1000
     n_cpus: 1
     random_seed: 5
 - train_nn:
-    ds_path: /home/gsukhorukov/virhunter/toy_dataset_out
-    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    ds_path: toy_dataset_out
+    out_path: toy_dataset_out
     fragment_length: 1000
     epochs: 1
     random_seed: 5
 - train_rf:
-    nn_weights_path: /home/gsukhorukov/virhunter/toy_dataset_out
-    ds_rf_path: /home/gsukhorukov/virhunter/toy_dataset_out
-    out_path: /home/gsukhorukov/virhunter/toy_dataset_out
+    nn_weights_path: toy_dataset_out
+    ds_rf_path: toy_dataset_out
+    out_path: toy_dataset_out
     fragment_length: 1000
     n_cpus: 1
     random_seed: 5
