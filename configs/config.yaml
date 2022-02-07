@@ -1,6 +1,7 @@
 - predict:
     ds_path:
-    weights_path:
+    nn_weights_path:
+    rf_weights_path:
     out_path:
     fragment_length:
     n_cpus:

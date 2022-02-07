@@ -81,7 +81,7 @@ def train_rf(nn_weights_path, ds_rf_path, out_path, length, n_cpus, random_seed)
     print('predictions for test dataset')
     dfs = []
     for org in ['virus', 'plant', 'bacteria']:
-        df = pr.predict(
+        df = pr.predict_nn(
             ds_path=Path(ds_rf_path, f"seqs_{org}_sampled_{length}_20000.fasta"),
             weights_path=nn_weights_path,
             length=length,

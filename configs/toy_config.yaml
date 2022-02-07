@@ -1,6 +1,7 @@
 - predict:
     ds_path: toy_dataset/viruses.fasta
-    weights_path: toy_dataset_out
+    nn_weights_path: toy_dataset_out
+    rf_weights_path: toy_dataset_out
     out_path: toy_dataset_out
     fragment_length: 1000
     n_cpus: 1

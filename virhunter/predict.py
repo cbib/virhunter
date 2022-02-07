@@ -19,7 +19,7 @@ from models import model_5, model_7, model_10
 from joblib import load
 
 
-def predict(ds_path, weights_path, length, n_cpus=3, batch_size=256):
+def predict_nn(ds_path, weights_path, length, n_cpus=3, batch_size=256):
     print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
@@ -72,9 +72,10 @@ def predict(ds_path, weights_path, length, n_cpus=3, batch_size=256):
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
     print('Exporting predictions to csv file')
-    df = pd.DataFrame(out_table)
-    # ML predictions
-    clf = load(Path(weights_path, "RF.joblib"))
+    return pd.DataFrame(out_table)
+
+def predict_rf(df, rf_weights_path):
+    clf = load(Path(rf_weights_path, "RF.joblib"))
     X = df[
         ["pred_plant_5", "pred_vir_5", "pred_plant_7", "pred_vir_7", "pred_plant_10", "pred_vir_10", ]]
     y_pred = np.array(clf.predict(X))
@@ -83,14 +84,20 @@ def predict(ds_path, weights_path, length, n_cpus=3, batch_size=256):
     return df
 
 
+
+
 def launch_predict(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
-    df = predict(
+    df = predict_nn(
         ds_path=cf[0]["predict"]["ds_path"],
         weights_path=cf[0]["predict"]["weights_path"],
         length=cf[0]["predict"]["fragment_length"],
         n_cpus=cf[0]["predict"]["n_cpus"],
+    )
+    df = predict_rf(
+        df=df,
+        rf_weights_path=cf[0]["predict"]["rf_weights_path"],
     )
     pred_file = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted.csv")
     df.to_csv(pred_file)
