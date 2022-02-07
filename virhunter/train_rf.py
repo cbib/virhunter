@@ -83,7 +83,7 @@ def train_rf(nn_weights_path, ds_rf_path, out_path, length, n_cpus, random_seed)
     for org in ['virus', 'plant', 'bacteria']:
         df = pr.predict_nn(
             ds_path=Path(ds_rf_path, f"seqs_{org}_sampled_{length}_20000.fasta"),
-            weights_path=nn_weights_path,
+            nn_weights_path=nn_weights_path,
             length=length,
             n_cpus=n_cpus,
             batch_size=256
