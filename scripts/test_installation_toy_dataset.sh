@@ -9,3 +9,4 @@ python virhunter/train_rf.py configs/toy_config.yaml
 echo "finished training random forest module"
 python virhunter/predict.py configs/toy_config.yaml
 echo "finished giving predictions for viral sequences"
+echo "Congratulations, VirHunter works properly!"

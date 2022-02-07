@@ -30,14 +30,14 @@ cd virhunter/
 
 ## Installing dependencies with Conda
 
-First, you have to create the environment from the `envs/environment.yml` file. 
+Firstly, you have to create the environment from the `envs/environment.yml` file. 
 The installation may take around 500 Mb of drive space. 
 
 ```shell
 conda env create -f envs/environment.yml
 ```
 
-Second, activate the environment:
+Then activate the environment:
 
 ```shell
 conda activate virhunter
@@ -53,7 +53,9 @@ pip install -r envs/requirements.txt
 
 ## Testing installation of the VirHunter
 
-You can test that VirHunter was successfully installed on the toy dataset we provide.
+You can test that VirHunter was successfully installed on the toy dataset we provide. 
+IMPORTANT: the toy dataset is intended only to test the correct work of VirHunter. 
+The trained modules should not be used for prediction on your datasets!
 
 First you have to download the toy dataset
 ```shell
@@ -65,6 +67,7 @@ bash scripts/test_installation_toy_dataset.sh
 ```
 ## Using VirHunter for prediction
 
+When being used for prediction of the viral contigs, 
 VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
 Before running VirHunter you have to fill in the config.yaml. For the prediction you need to fill in only the `predict` part.
@@ -85,13 +88,11 @@ python virhunter/predict.py configs/config.yaml
 
 ## Training your own model
 
-You can train your own model, for example for a specific host species. Before training you need to collect sequence data for training for three reference datasets: _viruses_, _bacteria_ and _host_. Examples are provided by running `scripts/download_toy_dataset.sh` that will download `viruses.fasta`, `host.fasta` and `bacteria.fasta` files (real reference datasets should corresond e.g. to the whole genome of the host, all bacteria and all viruses from the NCBI).
-
-Training requires execution of the following steps:
-- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`. This step splits the reference datasets into fragments of fixed size (specified in the `config.yaml` file, see below)
+You can train your own model, for example for a specific host species. Training requires execution of the following steps:
+- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`
 - prepare the training dataset for Random Forest classifier module with `prepare_ds_rf.py`
-- train the neural network module with `train_nn.py`
-- train the Random Forest module with `train_rf.py`
+- train neural network with `train_nn.py`
+- train Random Forest with `train_rf.py`
 
 To execute these steps you must first fill in the `config.yaml` and then launch the scripts consecutively providing them 
 with the config file like this:
@@ -103,7 +104,8 @@ python virhunter/prepare_ds_nn.py configs/config.yaml
 
 `predict`:
 - `ds_path`: path to the input file with contigs in fasta format
-- `weights_path`: folder containing weights for a trained model  
+- `nn_weights_path`: folder containing weights for a neural network module
+- `rf_weights_path`: folder containing weights for a random forest module
 - `out_path`: where to save predictions
 - `fragment_length`: 500 or 1000
 - `n_cpus`: number of cpus you want to use
