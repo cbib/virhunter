@@ -44,21 +44,18 @@ If you don't have Conda installed in your system, you can install python depende
 
 ## Using VirHunter for prediction
 
-VirHunter takes as input a fasta file with assembled contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
+When being used for prediction of the viral contigs, 
+VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
-Befor running VirHunter you have to fill in the config.yaml. You need only to fill the predict part with the following information:
-- `ds_path` - path to the input file with contigs in fasta format
-- `weights_path` - folder containing weights for a trained model  
-- `out_path` - path to the ouput folder to save results
-- `fragment_length` - 500 or 1000
-- `n_cpus` - number of cpus you want to use
+Before running VirHunter you have to fill in the config.yaml. You need to fill in only the `predict` part.
 
 To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
-for fragment sizes 500 and 1000. Weights for these models are available for download with script `download_weights.sh`.
+for fragment sizes 500 and 1000. Weights for these models can be downloaded with script `download_weights.sh`.
 
 `bash scripts/download_weights.sh`
 
-Once the weights are downloaded, if you want for example to use the weights of the model trained on peach 1000bp fragments, you should add in the `config.yaml` file the path to `$DIR/weights/peach/1000` where `$DIR` is the location where you have downloaded the weights.
+Once the weights are downloaded, if you want for example to use the weights of the model trained on peach 1000bp fragments, 
+you should add in the `configs/config.yaml` file the path to `$DIR/weights/peach/1000` where `$DIR` is the location where you have downloaded the weights.
 
 The command to run predictions is then:
 
@@ -66,8 +63,8 @@ The command to run predictions is then:
 
 ## Training your own model
 
-You can train your own model, for example for a specific host species. Training requires to
-- prepare the training dataset for the neural network module from fasta file
+You can train your own model, for example for a specific host species. Training requires execution of the following steps:
+- prepare the training dataset for the neural network module from fasta files
 - prepare the training dataset for Random Forest classifier module
 - train both modules 
 
@@ -75,7 +72,8 @@ We provide a toy dataset to illustrate the training process downloadable with th
 
 `bash scripts/download_toy_dataset.sh`
 
-The `configs/toy_config.yaml` file is provided to work with this toy dataset. Running the following 4 commands will prepare the datasets and train the models:
+The `configs/toy_config.yaml` file is provided to work with this toy dataset. 
+Running the following 4 commands will prepare the datasets and train the models:
 
 `python virhunter/prepare_ds_nn.py configs/toy_config.yaml`
 
@@ -86,6 +84,48 @@ The `configs/toy_config.yaml` file is provided to work with this toy dataset. Ru
 `python virhunter/train_rf.py configs/toy_config.yaml`
 
 `python virhunter/predict.py configs/toy_config.yaml`
+
+## VirHunter config composition
+
+`predict`:
+- `ds_path`: path to the input file with contigs in fasta format
+- `weights_path`: folder containing weights for a trained model  
+- `out_path`: where to save predictions
+- `fragment_length`: 500 or 1000
+- `n_cpus`: number of cpus you want to use
+
+`prepare_ds_nn`:
+- `path_virus`: path to fasta file with viral sequences
+- `path_plant`: path to fasta file with plant sequences 
+- `path_bact`: path to fasta file with bacterial sequences 
+- `out_path`: where to save training dataset for neural networks (in hdf5 format)
+- `fragment_length`: 500 or 1000 
+- `n_cpus`: number of cpus you want to use
+- `random_seed`: random seed for reshuffling dataset
+
+`prepare_ds_rf`:
+- `path_virus`: path to fasta file with viral sequences
+- `path_plant`: path to fasta file with plant sequences 
+- `path_bact`: path to fasta file with bacterial sequences 
+- `out_path`: where to save training dataset for RF
+- `fragment_length`: 500 or 1000 
+- `n_cpus`: number of cpus you want to use
+- `random_seed`: random seed for reshuffling dataset
+
+`train_nn`:
+- `ds_path`: path to the dataset prepared with `prepare_ds_nn` 
+- `out_path`: where to save weights of the trained neural networks
+- `epochs`: Number of epochs for each neural network to train
+- `fragment_length`: 500 or 1000
+- `random_seed`: random seed for reshuffling of the training dataset
+
+`train_rf`:
+- `nn_weights_path`: path to weights of trained neural networks prepared with `train_nn`
+- `ds_rf_path`: path to training dataset for RF prepared with `prepare_ds_rf`
+- `out_path`: where to save weights of the trained RF 
+- `fragment_length`: 500 or 1000 
+- `n_cpus`: number of cpus you want to use 
+- `random_seed`: random seed for reshuffling of the training dataset
 
 ## VirHunter on GPU
 

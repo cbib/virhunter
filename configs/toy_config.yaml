@@ -3,7 +3,7 @@
     weights_path: /home/gsukhorukov/virhunter/toy_dataset_out
     out_path: /home/gsukhorukov/virhunter/toy_dataset_out
     fragment_length: 1000
-    n_cpus: 4
+    n_cpus: 1
 - prepare_ds_nn:
     path_virus: /home/gsukhorukov/virhunter/toy_dataset/viruses.fasta
     path_plant: /home/gsukhorukov/virhunter/toy_dataset/host.fasta
@@ -31,5 +31,5 @@
     ds_rf_path: /home/gsukhorukov/virhunter/toy_dataset_out
     out_path: /home/gsukhorukov/virhunter/toy_dataset_out
     fragment_length: 1000
-    n_cpus: 4
+    n_cpus: 1
     random_seed: 5
