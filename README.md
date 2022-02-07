@@ -146,8 +146,8 @@ python virhunter/prepare_ds_nn.py configs/config.yaml
 ## VirHunter on GPU
 
 If you plan to train VirHunter on GPU, please use `environment_gpu.yml` or `requirements_gpu.ytxt` for dependencies installation.
-Additionally, if you plan to train VirHunter on cluster with multiple GPUs, you will need to replace `""` with
-`"N"` in header of `train_nn.py`, where N is the number of GPU you want to use.
+Additionally, if you plan to train VirHunter on cluster with multiple GPUs, you will need to uncomment line with
+`CUDA_VISIBLE_DEVICES` variable and replace `""` with `"N"` in header of `train_nn.py`, where N is the number of GPU you want to use.
 
 ```python
 import os
