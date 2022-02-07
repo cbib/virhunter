@@ -88,7 +88,7 @@ python virhunter/predict.py configs/config.yaml
 You can train your own model, for example for a specific host species. Before training you need to collect sequence data for training for three reference datasets: _viruses_, _bacteria_ and _host_.
 
 Training requires execution of the following steps:
-- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`. This step splits the reference datasets into fragments of fixed size (specified in the config.yaml file, see below)
+- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`. This step splits the reference datasets into fragments of fixed size (specified in the `config.yaml` file, see below)
 - prepare the training dataset for Random Forest classifier module with `prepare_ds_rf.py`
 - train the neural network module with `train_nn.py`
 - train the Random Forest module with `train_rf.py`
