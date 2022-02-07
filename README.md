@@ -30,14 +30,14 @@ cd virhunter/
 
 ## Installing dependencies with Conda
 
-Firstly, you have to create the environment from the `envs/environment.yml` file. 
+First, you have to create the environment from the `envs/environment.yml` file. 
 The installation may take around 500 Mb of drive space. 
 
 ```shell
 conda env create -f envs/environment.yml
 ```
 
-Then activate the environment:
+Second, activate the environment:
 
 ```shell
 conda activate virhunter
@@ -65,7 +65,6 @@ bash scripts/test_installation_toy_dataset.sh
 ```
 ## Using VirHunter for prediction
 
-When being used for prediction of the viral contigs, 
 VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
 Before running VirHunter you have to fill in the config.yaml. For the prediction you need to fill in only the `predict` part.
@@ -86,19 +85,19 @@ python virhunter/predict.py configs/config.yaml
 
 ## Training your own model
 
-You can train your own model, for example for a specific host species. Training requires execution of the following steps:
-- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`
+You can train your own model, for example for a specific host species. Before training you need to collect sequence data for training for three reference datasets: _viruses_, _bacteria_ and _host_.
+
+Training requires execution of the following steps:
+- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`. This step splits the reference datasets into fragments of fixed size (specified in the config.yaml file, see below)
 - prepare the training dataset for Random Forest classifier module with `prepare_ds_rf.py`
-- train neural network with `train_nn.py`
-- train Random Forest with `train_rf.py`
+- train the neural network module with `train_nn.py`
+- train the Random Forest module with `train_rf.py`
 
 To execute these steps you must first fill in the `config.yaml` and then launch the scripts consecutively providing them 
 with the config file like this:
 ```shell
 python virhunter/prepare_ds_nn.py configs/config.yaml
 ```
-
-
 
 ## VirHunter config.yaml description
 
