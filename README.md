@@ -67,13 +67,12 @@ bash scripts/test_installation_toy_dataset.sh
 ```
 ## Using VirHunter for prediction
 
-When being used for prediction of the viral contigs, 
 VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
-Before running VirHunter you have to fill in the config.yaml. For the prediction you need to fill in only the `predict` part.
+Before running VirHunter you have to fill in the `config.yaml` file. For the prediction you need to fill in only the `predict` part (see below).
 
 To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
-for fragment sizes 500 and 1000. Weights for these models can be downloaded with script `download_weights.sh`.
+for fragment sizes 500 and 1000. Weights for these models can be downloaded by running the `download_weights.sh` script:
 ```shell
 bash scripts/download_weights.sh
 ```
