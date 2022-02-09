@@ -3,8 +3,8 @@
 **VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and a Random Forest Classifier to identify viruses in sequening datasets. More precisely, VirHunter classifies previously assembled contigs as viral, host and bacterial (contamination). 
 
 ## System Requirements
-VirHunter installation requires an Unix environment with [python 3.8](http://www.python.org/). 
-It was tested under Linux environment.
+VirHunter installation requires a Unix environment with [python 3.8](http://www.python.org/). 
+It was tested on Linux and macOS operating systems.
 
 In order to run VirHunter your installation should include conda. 
 If you are installing it for the first time, we suggest you to use 
@@ -14,8 +14,13 @@ Otherwise, you can use pip for the dependencies' installation.
 ## Installation 
 
 The full installation process should take less than 15 minutes on a standard computer.
+To run some scripts on macOS you will have to install `wget` library. You can do this with `brew` package manager.
 
-Clone the repository from [github](https://github.com/cbib/virhunter)
+```shell
+brew install wget
+```
+
+Then clone the repository from [github](https://github.com/cbib/virhunter)
 
 ```shell
 git clone https://github.com/cbib/virhunter.git
