@@ -14,11 +14,6 @@ Otherwise, you can use pip for the dependencies' installation.
 ## Installation 
 
 The full installation process should take less than 15 minutes on a standard computer.
-To run some scripts on macOS you will have to install `wget` library. You can do this with `brew` package manager.
-
-```shell
-brew install wget
-```
 
 Then clone the repository from [github](https://github.com/cbib/virhunter)
 
@@ -54,6 +49,12 @@ If you don't have Conda installed in your system, you can install python depende
 
 ```shell
 pip install -r envs/requirements.txt
+```
+
+Then if you have macOS you will need to install `wget` library to run some scripts (Conda installation already has it). You can do this with `brew` package manager.
+
+```shell
+brew install wget
 ```
 
 ## Testing installation of the VirHunter
