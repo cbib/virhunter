@@ -4,7 +4,8 @@
 
 ## System Requirements
 VirHunter installation requires a Unix environment with [python 3.8](http://www.python.org/). 
-It was tested on Linux and macOS operating systems.
+It was tested on Linux and macOS operating systems. 
+For now, VirHunter is still not fully compatible with M1 chip Macbooks.
 
 In order to run VirHunter your installation should include conda. 
 If you are installing it for the first time, we suggest you to use 
