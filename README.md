@@ -76,6 +76,11 @@ bash scripts/test_installation_toy_dataset.sh
 
 VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
 
+For given contigs VirHunter produces a tab delimited csv file with prediction. `id` stores the fasta header of a contig,
+`length` describes the length of the contig. Columns `virus`, `plant` and `bacteria` store the number of fragments of the contig
+that received corresponding prediction by the RF classifier. Finally, column `decision` tell you about the final decision for a given contig.
+You should refer to it, when filtering viral contigs.
+
 Before running VirHunter you have to fill in the `config.yaml` file. For the prediction you need to fill in only the `predict` part (see below).
 
 To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
