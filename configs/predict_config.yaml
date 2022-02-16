@@ -1,0 +1,8 @@
+- predict:
+    ds_path: # path to the input file with contigs in fasta format
+    nn_weights_path_500: # folder containing weights for a neural network module trained on 500 fragment length
+    rf_weights_path_500: # folder containing weights for a random forest module trained on 500 fragment length
+    nn_weights_path_1000: # folder containing weights for a neural network module trained on 1000 fragment length
+    rf_weights_path_1000: # folder containing weights for a random forest module trained on 1000 fragment length
+    out_path: # where to save predictions
+    n_cpus: # number of cpus you want to use

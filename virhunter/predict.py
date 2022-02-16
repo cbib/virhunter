@@ -109,23 +109,31 @@ def predict_contigs(df):
     ]
     choices = ['virus', 'plant', 'bacteria']
     df['decision'] = np.select(conditions, choices, default='bacteria')
+    df = df.sort_values(by='length', ascending=False)
+    df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
     return df
 
 
 def launch_predict(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
-    df = predict_nn(
-        ds_path=cf[0]["predict"]["ds_path"],
-        nn_weights_path=cf[0]["predict"]["nn_weights_path"],
-        length=cf[0]["predict"]["fragment_length"],
-        n_cpus=cf[0]["predict"]["n_cpus"],
-    )
-    df = predict_rf(
-        df=df,
-        rf_weights_path=cf[0]["predict"]["rf_weights_path"],
-    )
-    df = predict_contigs(df)
+    dfs = []
+    for l_ in 500, 1000:
+        df = predict_nn(
+            ds_path=cf[0]["predict"]["ds_path"],
+            nn_weights_path=cf[0]["predict"][f"nn_weights_path_{l_}"],
+            length=cf[0]["predict"]["fragment_length"],
+            n_cpus=cf[0]["predict"]["n_cpus"],
+        )
+        df = predict_rf(
+            df=df,
+            rf_weights_path=cf[0]["predict"][f"rf_weights_path_{l_}"],
+        )
+        df = predict_contigs(df)
+        dfs.append(df)
+    df_500 = dfs[0][(dfs[0]['length'] >= 750) & (dfs[0]['length'] < 1500)]
+    df_1000 = dfs[1][(dfs[1]['length'] >= 1500)]
+    df = pd.concat([df_1000, df_500], ignore_index=True)
     pred_file = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted.csv")
     df.to_csv(pred_file)
 
