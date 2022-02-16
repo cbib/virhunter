@@ -20,6 +20,10 @@ from joblib import load
 
 
 def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
+    """
+    Breaks down contigs into fragments
+    and uses pretrained neural networks to give predictions for fragments
+    """
     print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
@@ -75,6 +79,9 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
     return pd.DataFrame(out_table)
 
 def predict_rf(df, rf_weights_path):
+    """
+    Using predictions by predict_nn and weights of a trained RF classifier gives a single prediction for a fragment
+    """
     clf = load(Path(rf_weights_path, "RF.joblib"))
     X = df[
         ["pred_plant_5", "pred_vir_5", "pred_plant_7", "pred_vir_7", "pred_plant_10", "pred_vir_10", ]]
@@ -84,6 +91,25 @@ def predict_rf(df, rf_weights_path):
     return df
 
 
+def predict_contigs(df):
+    """
+    Based on predictions of predict_rf for fragments gives a final prediction for the whole contig
+    """
+    df = (
+        df.groupby(["id", "length", 'predicted'], sort=False)
+        .size()
+        .unstack(fill_value=0)
+    )
+    df = df.reset_index()
+    df = df.reindex(['length', 'id', 'virus', 'plant', 'bacteria'], axis=1)
+    conditions = [
+        (df['virus'] > df['plant']) & (df['virus'] > df['bacteria']),
+        (df['plant'] > df['virus']) & (df['plant'] > df['bacteria']),
+        (df['bacteria'] >= df['plant']) & (df['bacteria'] >= df['virus']),
+    ]
+    choices = ['virus', 'plant', 'bacteria']
+    df['decision'] = np.select(conditions, choices, default='bacteria')
+    return df
 
 
 def launch_predict(config):
@@ -99,6 +125,7 @@ def launch_predict(config):
         df=df,
         rf_weights_path=cf[0]["predict"]["rf_weights_path"],
     )
+    df = predict_contigs(df)
     pred_file = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted.csv")
     df.to_csv(pred_file)
 
