@@ -113,7 +113,7 @@ This step splits the reference datasets into fragments of fixed size (specified 
 - train the neural network module with `train_nn.py`
 - train the Random Forest module with `train_rf.py`
 
-To execute these steps you must first fill in the `config.yaml`. This file already contains information on all expecten inputs .
+To execute these steps you must first fill in the `config.yaml`. This file already contains information on all expected inputs .
 Once `config.yaml` is filled you can launch the scripts consecutively providing them with the config file like this:
 ```shell
 python virhunter/prepare_ds_nn.py configs/config.yaml
