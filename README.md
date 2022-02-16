@@ -108,54 +108,11 @@ This step splits the reference datasets into fragments of fixed size (specified 
 - train the neural network module with `train_nn.py`
 - train the Random Forest module with `train_rf.py`
 
-To execute these steps you must first fill in the `config.yaml` and then launch the scripts consecutively providing them 
-with the config file like this:
+To execute these steps you must first fill in the `config.yaml`. This file already contains information on all expecten inputs .
+Once `config.yaml` is filled you can launch the scripts consecutively providing them with the config file like this:
 ```shell
 python virhunter/prepare_ds_nn.py configs/config.yaml
 ```
-
-## VirHunter config.yaml description
-
-`predict`:
-- `ds_path`: path to the input file with contigs in fasta format
-- `nn_weights_path`: folder containing weights for a neural network module
-- `rf_weights_path`: folder containing weights for a random forest module
-- `out_path`: where to save predictions
-- `fragment_length`: 500 or 1000
-- `n_cpus`: number of cpus you want to use
-
-`prepare_ds_nn`:
-- `path_virus`: path to fasta file with viral sequences
-- `path_plant`: path to fasta file with plant sequences 
-- `path_bact`: path to fasta file with bacterial sequences 
-- `out_path`: where to save training dataset for neural networks (in hdf5 format)
-- `fragment_length`: 500 or 1000 
-- `n_cpus`: number of cpus you want to use
-- `random_seed`: random seed for reshuffling dataset
-
-`prepare_ds_rf`:
-- `path_virus`: path to fasta file with viral sequences
-- `path_plant`: path to fasta file with plant sequences 
-- `path_bact`: path to fasta file with bacterial sequences 
-- `out_path`: where to save training dataset for RF
-- `fragment_length`: 500 or 1000 
-- `n_cpus`: number of cpus you want to use
-- `random_seed`: random seed for reshuffling dataset
-
-`train_nn`:
-- `ds_path`: path to the dataset prepared with `prepare_ds_nn` 
-- `out_path`: where to save weights of the trained neural networks
-- `epochs`: Number of epochs for each neural network to train
-- `fragment_length`: 500 or 1000
-- `random_seed`: random seed for reshuffling of the training dataset
-
-`train_rf`:
-- `nn_weights_path`: path to weights of trained neural networks prepared with `train_nn`
-- `ds_rf_path`: path to training dataset for RF prepared with `prepare_ds_rf`
-- `out_path`: where to save weights of the trained RF 
-- `fragment_length`: 500 or 1000 
-- `n_cpus`: number of cpus you want to use 
-- `random_seed`: random seed for reshuffling of the training dataset
 
 ## VirHunter on GPU
 
