@@ -122,7 +122,7 @@ def launch_predict(config):
         df = predict_nn(
             ds_path=cf[0]["predict"]["ds_path"],
             nn_weights_path=cf[0]["predict"][f"nn_weights_path_{l_}"],
-            length=cf[0]["predict"]["fragment_length"],
+            length=l_,
             n_cpus=cf[0]["predict"]["n_cpus"],
         )
         df = predict_rf(
