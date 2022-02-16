@@ -49,7 +49,7 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
         raise ValueError("All sequences were smaller than length of the model")
     test_fragments = []
     test_fragments_rc = []
-    ray.init(num_cpus=n_cpus, num_gpus=0)
+    ray.init(num_cpus=n_cpus, num_gpus=0, include_dashboard=False)
     for seq in seqs_:
         fragments_, fragments_rc, _ = pp.fragmenting([seq], length, max_gap=0.8,
                                                      sl_wind_step=int(length / 2))

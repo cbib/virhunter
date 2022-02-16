@@ -343,7 +343,7 @@ def sample_fragments(seq_container, length, random_seed=1, limit=None, max_gap=0
 def prepare_ds_fragmenting(in_seq, label, label_int, fragment_length, sl_wind_step, max_gap=0.05, n_cpus=1):
     if sl_wind_step is None:
         sl_wind_step = int(fragment_length / 2)
-    ray.init(num_cpus=n_cpus, num_gpus=0)
+    ray.init(num_cpus=n_cpus, num_gpus=0, include_dashboard=False)
     # generating viral fragments and labels
     seqs = list(SeqIO.parse(in_seq, "fasta"))
     frags, frags_rc, seqs_ = fragmenting(seqs, fragment_length, max_gap=max_gap, sl_wind_step=sl_wind_step)
@@ -367,7 +367,7 @@ def prepare_ds_fragmenting(in_seq, label, label_int, fragment_length, sl_wind_st
 
 
 def prepare_ds_sampling(in_seqs, fragment_length, n_frags, label, label_int, random_seed,  n_cpus=1, limit=100):
-    ray.init(num_cpus=n_cpus, num_gpus=0)
+    ray.init(num_cpus=n_cpus, num_gpus=0, include_dashboard=False)
     # generating plant fragments and labels
     seqs_list = prepare_seq_lists(in_seqs, n_frags)
     it = chunks(seqs_list, int(len(seqs_list) / n_cpus + 1))
