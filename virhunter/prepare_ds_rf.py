@@ -107,13 +107,13 @@ def launch_prepare_ds_rf(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     prepare_ds_rf(
-        path_virus=cf[2]["prepare_ds_rf"]["path_virus"],
-        path_plant=cf[2]["prepare_ds_rf"]["path_plant"],
-        path_bact=cf[2]["prepare_ds_rf"]["path_bact"],
-        out_path=cf[2]["prepare_ds_rf"]["out_path"],
-        fragment_length=cf[2]["prepare_ds_rf"]["fragment_length"],
-        n_cpus=cf[2]["prepare_ds_rf"]["n_cpus"],
-        random_seed=cf[2]["prepare_ds_rf"]["random_seed"],
+        path_virus=cf[1]["prepare_ds_rf"]["path_virus"],
+        path_plant=cf[1]["prepare_ds_rf"]["path_plant"],
+        path_bact=cf[1]["prepare_ds_rf"]["path_bact"],
+        out_path=cf[1]["prepare_ds_rf"]["out_path"],
+        fragment_length=cf[1]["prepare_ds_rf"]["fragment_length"],
+        n_cpus=cf[1]["prepare_ds_rf"]["n_cpus"],
+        random_seed=cf[1]["prepare_ds_rf"]["random_seed"],
     )
 
 

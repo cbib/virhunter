@@ -107,12 +107,12 @@ def launch_train_rf(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     train_rf(
-        nn_weights_path=cf[4]["train_rf"]["nn_weights_path"],
-        ds_rf_path=cf[4]["train_rf"]["ds_rf_path"],
-        out_path=cf[4]["train_rf"]["out_path"],
-        length=cf[4]["train_rf"]["fragment_length"],
-        n_cpus=cf[4]["train_rf"]["n_cpus"],
-        random_seed=cf[4]["train_rf"]["random_seed"],
+        nn_weights_path=cf[3]["train_rf"]["nn_weights_path"],
+        ds_rf_path=cf[3]["train_rf"]["ds_rf_path"],
+        out_path=cf[3]["train_rf"]["out_path"],
+        length=cf[3]["train_rf"]["fragment_length"],
+        n_cpus=cf[3]["train_rf"]["n_cpus"],
+        random_seed=cf[3]["train_rf"]["random_seed"],
     )
 
 if __name__ == '__main__':

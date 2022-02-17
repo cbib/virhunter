@@ -149,13 +149,13 @@ def launch_prepare_ds_nn(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     prepare_ds_nn(
-        path_virus=cf[1]["prepare_ds_nn"]["path_virus"],
-        path_plant=cf[1]["prepare_ds_nn"]["path_plant"],
-        path_bact=cf[1]["prepare_ds_nn"]["path_bact"],
-        out_path=cf[1]["prepare_ds_nn"]["out_path"],
-        fragment_length=cf[1]["prepare_ds_nn"]["fragment_length"],
-        n_cpus=cf[1]["prepare_ds_nn"]["n_cpus"],
-        random_seed=cf[1]["prepare_ds_nn"]["random_seed"],
+        path_virus=cf[0]["prepare_ds_nn"]["path_virus"],
+        path_plant=cf[0]["prepare_ds_nn"]["path_plant"],
+        path_bact=cf[0]["prepare_ds_nn"]["path_bact"],
+        out_path=cf[0]["prepare_ds_nn"]["out_path"],
+        fragment_length=cf[0]["prepare_ds_nn"]["fragment_length"],
+        n_cpus=cf[0]["prepare_ds_nn"]["n_cpus"],
+        random_seed=cf[0]["prepare_ds_nn"]["random_seed"],
     )
 
 

@@ -119,11 +119,11 @@ def launch_train_nn(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     train_nn(
-        ds_path=cf[3]["train_nn"]["ds_path"],
-        out_path=cf[3]["train_nn"]["out_path"],
-        length=cf[3]["train_nn"]["fragment_length"],
-        epochs=cf[3]["train_nn"]["epochs"],
-        random_seed=cf[3]["train_nn"]["random_seed"],
+        ds_path=cf[2]["train_nn"]["ds_path"],
+        out_path=cf[2]["train_nn"]["out_path"],
+        length=cf[2]["train_nn"]["fragment_length"],
+        epochs=cf[2]["train_nn"]["epochs"],
+        random_seed=cf[2]["train_nn"]["random_seed"],
     )
 
 
