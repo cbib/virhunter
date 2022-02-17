@@ -5,7 +5,7 @@
 ## System Requirements
 VirHunter installation requires a Unix environment with [python 3.8](http://www.python.org/). 
 It was tested on Linux and macOS operating systems. 
-For now, VirHunter is still not fully compatible with M1 chip Macbooks.
+For now, VirHunter is still not fully compatible with M1 chip MacBook.
 
 In order to run VirHunter your installation should include conda. 
 If you are installing it for the first time, we suggest you to use 
@@ -105,10 +105,9 @@ python virhunter/predict.py configs/predict_config.yaml
 
 You can train your own model, for example for a specific host species. Before training, you need to collect sequence 
 data for training for three reference datasets: _viruses_, _bacteria_ and _host_. 
-Examples are provided by running `scripts/download_toy_dataset.sh` that will download `viruses.fasta`, 
+Examples are provided by running `scripts/download_test_installation.sh` that will download `viruses.fasta`, 
 `host.fasta` and `bacteria.fasta` files (real reference datasets should correspond 
 e.g. to the whole genome of the host, all bacteria and all viruses from the NCBI).
-
 
 Training requires execution of the following steps:
 - prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`. 
@@ -117,11 +116,16 @@ This step splits the reference datasets into fragments of fixed size (specified 
 - train the neural network module with `train_nn.py`
 - train the Random Forest module with `train_rf.py`
 
-To execute these steps you must first fill in the `config.yaml`. This file already contains information on all expected inputs .
-Once `config.yaml` is filled you can launch the scripts consecutively providing them with the config file like this:
+The successful training of VirHunter produces weights for the three neural networks from the first module and weights for the 
+trained Random Forest classifier. They can be subsequently used for prediction.
+
+To execute the steps of the training you must first fill in the `train_config.yaml`. This file already contains information on all expected inputs.
+Once `train_config.yaml` is filled you can launch the scripts consecutively providing them with the config file like this:
 ```shell
 python virhunter/prepare_ds_nn.py configs/train_config.yaml
 ```
+
+
 
 ## VirHunter on GPU
 
