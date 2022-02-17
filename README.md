@@ -66,11 +66,11 @@ The trained modules should not be used for prediction on your datasets!
 
 First, you have to download the toy dataset
 ```shell
-bash scripts/download_toy_dataset.sh
+bash scripts/download_test_installation.sh
 ```
 Then launch the script for testing training and prediction python scripts of VirHunter
 ```shell
-bash scripts/test_installation_toy_dataset.sh
+bash scripts/test_installation.sh
 ```
 ## Using VirHunter for prediction
 

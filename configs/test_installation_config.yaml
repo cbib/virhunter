@@ -1,29 +1,29 @@
 - prepare_ds_nn:
-    path_virus: toy_dataset/viruses.fasta
-    path_plant: toy_dataset/host.fasta
-    path_bact: toy_dataset/bacteria.fasta
-    out_path: toy_dataset_out
+    path_virus: test_installation/viruses.fasta
+    path_plant: test_installation/host.fasta
+    path_bact: test_installation/bacteria.fasta
+    out_path: test_installation_out
     fragment_length: 1000
     n_cpus: 1
     random_seed: 5
 - prepare_ds_rf:
-    path_virus: toy_dataset/viruses.fasta
-    path_plant: toy_dataset/host.fasta
-    path_bact: toy_dataset/bacteria.fasta
-    out_path: toy_dataset_out
+    path_virus: test_installation/viruses.fasta
+    path_plant: test_installation/host.fasta
+    path_bact: test_installation/bacteria.fasta
+    out_path: test_installation_out
     fragment_length: 1000
     n_cpus: 1
     random_seed: 5
 - train_nn:
-    ds_path: toy_dataset_out
-    out_path: toy_dataset_out
+    ds_path: test_installation_out
+    out_path: test_installation_out
     fragment_length: 1000
     epochs: 1
     random_seed: 5
 - train_rf:
-    nn_weights_path: toy_dataset_out
-    ds_rf_path: toy_dataset_out
-    out_path: toy_dataset_out
+    nn_weights_path: test_installation_out
+    ds_rf_path: test_installation_out
+    out_path: test_installation_out
     fragment_length: 1000
     n_cpus: 1
     random_seed: 5
