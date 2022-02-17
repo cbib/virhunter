@@ -1,10 +1,3 @@
-- predict:
-    ds_path: # path to the input file with contigs in fasta format
-    nn_weights_path: # folder containing weights for a neural network module
-    rf_weights_path: # folder containing weights for a random forest module
-    out_path: # where to save predictions
-    fragment_length: # 500 or 1000
-    n_cpus: # number of cpus you want to use
 - prepare_ds_nn:
     path_virus: # path to fasta file with viral sequences
     path_plant: # path to fasta file with plant sequences

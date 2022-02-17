@@ -79,22 +79,26 @@ VirHunter takes as input a fasta file with contigs and outputs a prediction for 
 For given contigs VirHunter produces a tab delimited csv file with prediction. `id` stores the fasta header of a contig,
 `length` describes the length of the contig. Columns `virus`, `plant` and `bacteria` store the number of fragments of the contig
 that received corresponding prediction by the RF classifier. Finally, column `decision` tell you about the final decision for a given contig.
-You should refer to it, when filtering viral contigs.
+You should refer to it, when filtering viral contigs. 
 
-Before running VirHunter you have to fill in the `config.yaml` file. For the prediction you need to fill in only the `predict` part (see below).
+To do predictions VirHunter needs to be fully trained for fragment sizes 500 and 1000. VirHunter will discard from prediction
+contigs shorter than 500 bp. VirHunter trained on 500 fragment size will be used for contigs with `750 < length < 1500`. The VirHunter
+trained on fragment size 1500 will be used for contigs longer than 1500 bp.
+
+Before running VirHunter you have to fill in the `predict_config.yaml` file.
 
 To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
 for fragment sizes 500 and 1000. Weights for these models can be downloaded by running the `download_weights.sh` script:
 ```shell
 bash scripts/download_weights.sh
 ```
-Once the weights are downloaded, if you want for example to use the weights of the model trained on peach 1000bp fragments, 
-you should add in the `configs/config.yaml` file the path to `weights/peach/1000`.
+Once the weights are downloaded, if you want for example to use the weights of the model trained on peach, 
+you should add in the `configs/predict_config.yaml` paths  `weights/peach/1000` and `weights/peach/500`.
 
 The command to run predictions is then:
 
 ```shell
-python virhunter/predict.py configs/config.yaml
+python virhunter/predict.py configs/predict_config.yaml
 ```
 
 ## Training your own model
@@ -116,7 +120,7 @@ This step splits the reference datasets into fragments of fixed size (specified 
 To execute these steps you must first fill in the `config.yaml`. This file already contains information on all expected inputs .
 Once `config.yaml` is filled you can launch the scripts consecutively providing them with the config file like this:
 ```shell
-python virhunter/prepare_ds_nn.py configs/config.yaml
+python virhunter/prepare_ds_nn.py configs/train_config.yaml
 ```
 
 ## VirHunter on GPU
