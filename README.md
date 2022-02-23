@@ -74,12 +74,13 @@ bash scripts/test_installation.sh
 ```
 ## Using VirHunter for prediction
 
-VirHunter takes as input a fasta file with contigs and outputs a prediction for each contig to be viral, host (plant) or bacterial.
-
-For given contigs VirHunter produces a tab delimited csv file with prediction. `id` stores the fasta header of a contig,
-`length` describes the length of the contig. Columns `virus`, `plant` and `bacteria` store the number of fragments of the contig
-that received corresponding prediction by the RF classifier. Finally, column `decision` tell you about the final decision for a given contig.
-You should refer to it, when filtering viral contigs. 
+For given contigs VirHunter produces two comma delimited csv files with prediction. The first file ending with `_contig_fragments.csv`
+is intermediate as it contains predictions of all networks and of RF classifier for fragments of contigs. The file with 
+final prediction for whole contigs ends with `_predicted_contigs.csv`. In this file, 
+field `id` stores the fasta header of a contig,
+`length` describes the length of the contig. Columns `# viral fragments`, `# plant fragments` and `# bacterial fragments` 
+store the number of fragments of the contig that received corresponding prediction by the RF classifier. 
+Finally, column `decision` tell you about the final decision for a given contig by the VirHunter.
 
 To do predictions VirHunter needs to be fully trained for fragment sizes 500 and 1000. VirHunter will discard from prediction
 contigs shorter than 500 bp. VirHunter trained on 500 fragment size will be used for contigs with `750 < length < 1500`. The VirHunter

@@ -85,9 +85,13 @@ def predict_rf(df, rf_weights_path):
     clf = load(Path(rf_weights_path, "RF.joblib"))
     X = df[
         ["pred_plant_5", "pred_vir_5", "pred_plant_7", "pred_vir_7", "pred_plant_10", "pred_vir_10", ]]
-    y_pred = np.array(clf.predict(X))
+    y_pred = clf.predict(X)
     mapping = {0: "plant", 1: "virus", 2: "bacteria"}
-    df["predicted"] = np.vectorize(mapping.get)(y_pred)
+    df["RF_decision"] = np.vectorize(mapping.get)(y_pred)
+    prob_classes = clf.predict_proba(X)
+    df["RF_pred_plant"] = prob_classes[..., 0]
+    df["RF_pred_vir"] = prob_classes[..., 1]
+    df["RF_pred_bact"] = prob_classes[..., 2]
     return df
 
 
@@ -96,7 +100,7 @@ def predict_contigs(df):
     Based on predictions of predict_rf for fragments gives a final prediction for the whole contig
     """
     df = (
-        df.groupby(["id", "length", 'predicted'], sort=False)
+        df.groupby(["id", "length", 'RF_decision'], sort=False)
         .size()
         .unstack(fill_value=0)
     )
@@ -111,13 +115,15 @@ def predict_contigs(df):
     df['decision'] = np.select(conditions, choices, default='bacteria')
     df = df.sort_values(by='length', ascending=False)
     df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
+    df = df.rename(columns={'virus': '# viral fragments', 'bacteria': '# bacterial fragments', 'plant': '# plant fragments'})
     return df
 
 
 def launch_predict(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
-    dfs = []
+    dfs_fr = []
+    dfs_cont = []
     for l_ in 500, 1000:
         df = predict_nn(
             ds_path=cf[0]["predict"]["ds_path"],
@@ -129,13 +135,20 @@ def launch_predict(config):
             df=df,
             rf_weights_path=cf[0]["predict"][f"rf_weights_path_{l_}"],
         )
+        dfs_fr.append(df)
         df = predict_contigs(df)
-        dfs.append(df)
-    df_500 = dfs[0][(dfs[0]['length'] >= 750) & (dfs[0]['length'] < 1500)]
-    df_1000 = dfs[1][(dfs[1]['length'] >= 1500)]
+        dfs_cont.append(df)
+    df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
+    df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
     df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_file = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted.csv")
-    df.to_csv(pred_file)
+    pred_fr = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted_contig_fragments.csv")
+    df.to_csv(pred_fr)
+
+    df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
+    df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
+    df = pd.concat([df_1000, df_500], ignore_index=True)
+    pred_contigs = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted_contigs.csv")
+    df.to_csv(pred_contigs)
 
 
 if __name__ == '__main__':
