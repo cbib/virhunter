@@ -17,6 +17,7 @@ from utils import preprocess as pp
 from pathlib import Path
 from models import model_5, model_7, model_10
 from joblib import load
+import psutil
 
 
 def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
@@ -24,6 +25,9 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
     Breaks down contigs into fragments
     and uses pretrained neural networks to give predictions for fragments
     """
+    pid = psutil.Process(os.getpid())
+    pid.cpu_affinity(range(n_cpus))
+
     print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
@@ -120,6 +124,9 @@ def predict_contigs(df):
 
 
 def launch_predict(config):
+    """
+    Function for realizing full prediction pipeline
+    """
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
     dfs_fr = []

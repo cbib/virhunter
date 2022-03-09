@@ -176,7 +176,7 @@ def label_fasta_fragments(sequences, label):
     return labeled_fragments
 
 
-@ray.remote(num_cpus=1, max_calls=1)
+@ray.remote(max_calls=1)
 def one_hot_encode(fragments):
     """
     produces one-hot matrices from fragments and labels
@@ -284,7 +284,7 @@ def prepare_seq_lists(in_paths, n_fragments, weights=None,):
         return list(zip(seqs_list_all, n_fragments_list_all))
 
 
-@ray.remote(num_cpus=1, max_calls=1)
+@ray.remote(max_calls=1)
 def sample_fragments(seq_container, length, random_seed=1, limit=None, max_gap=0.05, sl_wind_step=None):
     """
     Randomly samples fragments from sequences in the list.
