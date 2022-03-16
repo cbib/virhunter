@@ -1,5 +1,5 @@
 #!/bin/bash
 
-wget https://zenodo.org/record/5957275/files/weights.tar.gz
+wget https://www.dropbox.com/s/249jfrp208wyy0w/weights.tar.gz 
 tar -xf weights.tar.gz
 rm weights.tar.gz

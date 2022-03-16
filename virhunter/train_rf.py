@@ -73,11 +73,6 @@ def fit_clf(df, save_path, rs):
 
 
 def train_rf(nn_weights_path, ds_rf_path, out_path, length, n_cpus, random_seed):
-    weights = [
-        Path(nn_weights_path, "model_5.h5"),
-        Path(nn_weights_path, "model_7.h5"),
-        Path(nn_weights_path, "model_10.h5"),
-    ]
     print('predictions for test dataset')
     dfs = []
     for org in ['virus', 'plant', 'bacteria']:
@@ -89,7 +84,6 @@ def train_rf(nn_weights_path, ds_rf_path, out_path, length, n_cpus, random_seed)
             batch_size=256
         )
         dfs.append(df)
-    # subsetting predictions
     df_v = subset_df(dfs[0], 'vir', thr=0.8)
     df_pl = subset_df(dfs[1], 'plant', thr=1.0)
     df_b = subset_df(dfs[2], 'bact', thr=1.0)
