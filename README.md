@@ -88,8 +88,8 @@ trained on fragment size 1500 will be used for contigs longer than 1500 bp.
 
 Before running VirHunter you have to fill in the `predict_config.yaml` file.
 
-To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 3 host species  (peach, grapevine, sugar beet) and 
-for fragment sizes 500 and 1000. Weights for these models can be downloaded by running the `download_weights.sh` script:
+To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 7 plants (peach, grapevine, sugar beet, rice, lettuce, tomato, carrot) and 
+for fragment sizes 500 and 1000 each. Weight for these models can be downloaded by running the `download_weights.sh` script:
 ```shell
 bash scripts/download_weights.sh
 ```
