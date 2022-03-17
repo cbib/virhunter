@@ -58,42 +58,26 @@ Then if you have macOS you will need to install `wget` library to run some scrip
 brew install wget
 ```
 
-## Testing installation of the VirHunter
+## Testing your installation of VirHunter
 
 You can test that VirHunter was successfully installed on the toy dataset we provide. 
-IMPORTANT: the toy dataset is intended only to test the correct work of VirHunter. 
-The trained modules should not be used for prediction on your datasets!
+IMPORTANT: the toy dataset is intended only to test that VirHunter has been well installed and all the scripts can be executed. 
+These modules should not be used for prediction on your owd datasets!
 
 First, you have to download the toy dataset
 ```shell
 bash scripts/download_test_installation.sh
 ```
-Then launch the script for testing training and prediction python scripts of VirHunter
+Then run the bash script that calls the testing, training and prediction python scripts of VirHunter
 ```shell
 bash scripts/test_installation.sh
 ```
+
 ## Using VirHunter for prediction
 
-For given contigs VirHunter produces two comma delimited csv files with prediction. The first file ending with `_contig_fragments.csv`
-is intermediate as it contains predictions of all networks and of RF classifier for fragments of contigs. The file with 
-final prediction for whole contigs ends with `_predicted_contigs.csv`. In this file, 
-field `id` stores the fasta header of a contig,
-`length` describes the length of the contig. Columns `# viral fragments`, `# plant fragments` and `# bacterial fragments` 
-store the number of fragments of the contig that received corresponding prediction by the RF classifier. 
-Finally, column `decision` tell you about the final decision for a given contig by the VirHunter.
+Before running VirHunter you have to fill in the `predict_config.yaml file`.
 
-To do predictions VirHunter needs to be fully trained for fragment sizes 500 and 1000. VirHunter will discard from prediction
-contigs shorter than 500 bp. VirHunter trained on 500 fragment size will be used for contigs with `750 < length < 1500`. The VirHunter
-trained on fragment size 1500 will be used for contigs longer than 1500 bp.
-
-Before running VirHunter you have to fill in the `predict_config.yaml` file.
-
-To run VirHunter you can use the already pre-trained models. Provided are fully trained models for 7 plants (peach, grapevine, sugar beet, rice, lettuce, tomato, carrot) and 
-for fragment sizes 500 and 1000 each. Weight for these models can be downloaded by running the `download_weights.sh` script:
-```shell
-bash scripts/download_weights.sh
-```
-Once the weights are downloaded, if you want for example to use the weights of the model trained on peach, 
+To run VirHunter you can use the already pre-trained models. For example, to use the weights of the pretrained model for peach, 
 you should add in the `configs/predict_config.yaml` paths  `weights/peach/1000` and `weights/peach/500`.
 
 The command to run predictions is then:
@@ -101,6 +85,22 @@ The command to run predictions is then:
 ```shell
 python virhunter/predict.py configs/predict_config.yaml
 ```
+
+VirHunter models can also be trained on your own data, for example using the same plant as the host of your RNAseq dataset. In this case 2 models have to be trained for fragment sizes 500 and 1000. See below how to train your own models.
+
+Given input contigs, VirHunter produces two comma delimited csv files with prediction:
+
+1. The first file ends with `_contig_fragments.csv`
+It is an intermediate result containing predictions of three CNN networks and of the RF classifier for each fragment of each input contig. 
+
+2. The second file ends with `_predicted_contigs.csv`. 
+This file contains final predictions for contigs. In this file, field `id` stores the fasta header of each contig,
+`length` describes the length of the contig. Columns `# viral fragments`, `# plant fragments` and `# bacterial fragments` 
+store the number of fragments of the contig that received corresponding class prediction by the RF classifier. 
+Finally, column `decision` tells you about the final decision for a given contig by the VirHunter.
+
+VirHunter will discard from prediction contigs shorter than 500 bp. VirHunter trained on 500 fragment size will be used for contigs with `750 < length < 1500`. The VirHunter trained on fragment size 1500 will be used for contigs longer than 1500 bp.
+
 
 ## Training your own model
 
