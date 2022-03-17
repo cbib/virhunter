@@ -91,7 +91,7 @@ VirHunter models can also be trained on your own data, for example using the sam
 Given input contigs, VirHunter produces two comma delimited csv files with prediction:
 
 1. The first file ends with `_contig_fragments.csv`
-It is an intermediate result containing predictions of three CNN networks and of the RF classifier for each fragment of each input contig. 
+It is an intermediate result containing predictions of three CNN networks (probabilities of belonging to each of the virus/plant/bacteria class) and of the RF classifier for each fragment of each input contig. 
 
 2. The second file ends with `_predicted_contigs.csv`. 
 This file contains final predictions for contigs. In this file, field `id` stores the fasta header of each contig,
