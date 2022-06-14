@@ -18,6 +18,10 @@ import predict as pr
 
 
 def subset_df(df, org, thr=0.8, final_df_size=1000):
+    """
+    Subsets dataset with viral predictions
+    For RF classifier to learn from badly predicted viral fragments
+    """
     if thr == 1.0:
         df_1 = df.sample(n=final_df_size)
     else:
@@ -42,6 +46,9 @@ def load_ds(df, label, family=None,):
 
 
 def merge_ds(path_ds_v, path_ds_pl, path_ds_b, fract, rs, family=None,):
+    """
+    Preprocess predictions by neural network before training RF classifier
+    """
     df_vir = load_ds(path_ds_v, label=1, family=family,)
     df_plant = load_ds(path_ds_pl, label=0, family=family,)
     df_bact = load_ds(path_ds_b, label=2, family=family,)
