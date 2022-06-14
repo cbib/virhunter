@@ -75,10 +75,24 @@ bash scripts/test_installation.sh
 
 ## Using VirHunter for prediction
 
-Before running VirHunter you have to fill in the `predict_config.yaml file`.
+To run VirHunter you can use the already pre-trained models or train VirHunter yourself (described in the next section).
+Pret-rained model weights are available for the following host plants: 
+- grapevine
+- tomato
+- sugar beet
+- peach
+- rice
+- carrot
+- lettuce
 
-To run VirHunter you can use the already pre-trained models. For example, to use the weights of the pretrained model for peach, 
+
+To use the model pretrained on one of the plants listed you will need first to download weights using `download_weights.sh` script.
+```shell
+bash scripts/download_weights.sh 
+```
+Then you will need to fill `predict_config.yaml file`. If for example, you want to use the weights of the pretrained model for peach, 
 you should add in the `configs/predict_config.yaml` paths  `weights/peach/1000` and `weights/peach/500`.
+
 
 The command to run predictions is then:
 
@@ -91,7 +105,7 @@ VirHunter models can also be trained on your own data, for example using the sam
 Given input contigs, VirHunter produces two comma delimited csv files with prediction:
 
 1. The first file ends with `_contig_fragments.csv`
-It is an intermediate result containing predictions of three CNN networks and of the RF classifier for each fragment of each input contig. 
+It is an intermediate result containing predictions of three CNN networks (probabilities of belonging to each of the virus/plant/bacteria class) and of the RF classifier for each fragment of each input contig. 
 
 2. The second file ends with `_predicted_contigs.csv`. 
 This file contains final predictions for contigs. In this file, field `id` stores the fasta header of each contig,
