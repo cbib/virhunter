@@ -123,24 +123,36 @@ def predict_contigs(df):
     return df
 
 
-def launch_predict(config):
+def predict(config):
     """
-    Function for realizing full prediction pipeline
+    Predicts viral contigs from the fasta file
+    Arguments:
+    config file containing following fields:
+        test_ds - path to the file with sequences for prediction (fasta format)
+        weights - path to the folder with weights of pretrained NN and RF weights.
+        This folder should contain to subfolders 500 and 1000. Each of them contains corresponding weight.
+        out_folder - path to the folder, where to store output. You should create it
+        return_viral - return contigs annotated as viral by virhunter (fasta format)
     """
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
+
+    assert Path(test_ds).exists(), f'{test_ds} does not exist'
+    assert Path(weights).exists(), f'{weights} does not exist'
+    Path(out_folder).mkdir(parents=True, exist_ok=True)
+
     dfs_fr = []
     dfs_cont = []
     for l_ in 500, 1000:
         df = predict_nn(
-            ds_path=cf[0]["predict"]["ds_path"],
-            nn_weights_path=cf[0]["predict"][f"nn_weights_path_{l_}"],
+            ds_path=cf["predict"]["test_ds"],
+            nn_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
             length=l_,
-            n_cpus=cf[0]["predict"]["n_cpus"],
+            n_cpus=cf["predict"]["n_cpus"],
         )
         df = predict_rf(
             df=df,
-            rf_weights_path=cf[0]["predict"][f"rf_weights_path_{l_}"],
+            rf_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
         )
         dfs_fr.append(df)
         df = predict_contigs(df)
@@ -148,15 +160,21 @@ def launch_predict(config):
     df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
     df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
     df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_fr = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted_contig_fragments.csv")
+    pred_fr = Path(out_folder, f"{Path(cf['predict']['test_ds']).stem}_predicted_contig_fragments.csv")
     df.to_csv(pred_fr)
 
     df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
     df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
     df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_contigs = Path(cf[0]["predict"]["out_path"], f"{Path(cf[0]['predict']['ds_path']).stem}_predicted_contigs.csv")
+    pred_contigs = Path(out_folder, f"{Path(cf['predict']['test_ds']).stem}_predicted_contigs.csv")
     df.to_csv(pred_contigs)
+
+    if cf["predict"]["return_viral"]:
+        viral_ids = list(df[df["decision"] == "virus"]["id"])
+        seqs_ = list(SeqIO.parse(cf['predict']['test_ds'], "fasta"))
+        viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
+        SeqIO.write(viral_seqs, Path(out_folder, f"{Path(cf['predict']['test_ds']).stem}_viral_contigs.fasta"), 'fasta')
 
 
 if __name__ == '__main__':
-    fire.Fire(launch_predict)
+    fire.Fire(predict)

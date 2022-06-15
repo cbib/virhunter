@@ -3,6 +3,8 @@ toy_dataset/
 toy_dataset_out/
 weights/
 .weights/
+test_installation/
+test_installation_out/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

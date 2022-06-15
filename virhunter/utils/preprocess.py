@@ -396,4 +396,3 @@ def storing_encoded(encoded, encoded_rc, labs, out_path, ):
     f.create_dataset("fragments_rc", data=encoded_rc)
     f.create_dataset("labels", data=labs)
     f.close()
-    print(f"encoded fragments and labels stored in {out_path}")

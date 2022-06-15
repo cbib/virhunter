@@ -68,7 +68,8 @@ First, you have to download the toy dataset
 ```shell
 bash scripts/download_test_installation.sh
 ```
-Then run the bash script that calls the testing, training and prediction python scripts of VirHunter
+Then run the bash script that calls the testing, training and prediction python scripts of VirHunter.
+Attention, the training process may take more than one hour.
 ```shell
 bash scripts/test_installation.sh
 ```
@@ -76,7 +77,7 @@ bash scripts/test_installation.sh
 ## Using VirHunter for prediction
 
 To run VirHunter you can use the already pre-trained models or train VirHunter yourself (described in the next section).
-Pret-rained model weights are available for the following host plants: 
+Pre-trained model weights are available for the following host plants: 
 - grapevine
 - tomato
 - sugar beet
@@ -91,7 +92,7 @@ To use the model pretrained on one of the plants listed you will need first to d
 bash scripts/download_weights.sh 
 ```
 Then you will need to fill `predict_config.yaml file`. If for example, you want to use the weights of the pretrained model for peach, 
-you should add in the `configs/predict_config.yaml` paths  `weights/peach/1000` and `weights/peach/500`.
+you should add in the `configs/predict_config.yaml` path  `weights/peach`.
 
 
 The command to run predictions is then:
@@ -125,17 +126,20 @@ Examples are provided by running `scripts/download_test_installation.sh` that wi
 e.g. to the whole genome of the host, all bacteria and all viruses from the NCBI).
 
 Training requires execution of the following steps:
-- prepare the training dataset for the neural network module from fasta files with `prepare_ds_nn.py`. 
-This step splits the reference datasets into fragments of fixed size (specified in the `config.yaml` file, see below)
-- prepare the training dataset for Random Forest classifier module with `prepare_ds_rf.py`
-- train the neural network module with `train_nn.py`
-- train the Random Forest module with `train_rf.py`
+- prepare the training dataset for the neural network and Random Forest modules from fasta files with `prepare_ds.py`.
+- Otherwise, you can prepare more complex training dataset taking into account plant chloroplast and CDS 
+sequences with `prepare_ds_complex.py`
+- train the neural network and Random Forest modules with `train.py`
+
+The training will be done twice - for fragment sizes of 500 and 1000.
 
 The successful training of VirHunter produces weights for the three neural networks from the first module and weights for the 
-trained Random Forest classifier. They can be subsequently used for prediction.
+trained Random Forest classifier for fragment sizes of 500 and 1000. They can be subsequently used for prediction.
 
-To execute the steps of the training you must first fill in the `train_config.yaml`. This file already contains information on all expected inputs.
-Once `train_config.yaml` is filled you can launch the scripts consecutively providing them with the config file like this:
+To execute the steps of the training you must first create a copy of the `template_config.yaml`. 
+Then depending on the tasks you want to execute fill in the necessary parts of the config file.
+No need to fill them in all!
+Once config file is filled you can launch the scripts consecutively providing them with the config file like this:
 ```shell
 python virhunter/prepare_ds_nn.py configs/train_config.yaml
 ```
@@ -153,4 +157,3 @@ If you plan to train VirHunter on cluster with multiple GPUs, you will need to u
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "N"
 ```
-new branch

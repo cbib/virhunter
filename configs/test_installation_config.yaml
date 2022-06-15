@@ -1,29 +1,21 @@
-- prepare_ds_nn:
+prepare_ds:
     path_virus: test_installation/viruses.fasta
     path_plant: test_installation/host.fasta
     path_bact: test_installation/bacteria.fasta
     out_path: test_installation_out
-    fragment_length: 1000
-    n_cpus: 1
+    n_cpus: 10
     random_seed: 5
-- prepare_ds_rf:
-    path_virus: test_installation/viruses.fasta
-    path_plant: test_installation/host.fasta
-    path_bact: test_installation/bacteria.fasta
-    out_path: test_installation_out
-    fragment_length: 1000
-    n_cpus: 1
-    random_seed: 5
-- train_nn:
+
+train:
     ds_path: test_installation_out
     out_path: test_installation_out
-    fragment_length: 1000
     epochs: 1
+    n_cpus: 10
     random_seed: 5
-- train_rf:
-    nn_weights_path: test_installation_out
-    ds_rf_path: test_installation_out
-    out_path: test_installation_out
-    fragment_length: 1000
+
+predict:
+    test_ds: test_installation/viruses.fasta
+    weights: test_installation_out
+    out_folder: test_installation_out
     n_cpus: 1
-    random_seed: 5
+    return_viral: True

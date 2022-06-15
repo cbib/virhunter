@@ -126,17 +126,16 @@ def predict_contigs(df):
 def predict(test_ds, weights, out_folder, return_viral):
     """
     Predicts viral contigs from the fasta file
-    Argements:
+    Arguments:
     test_ds - path to the file with sequences for prediction (fasta format)
     weights - path to the folder with weights of pretrained NN and RF weights.
     This folder should contain to subfolders 500 and 1000. Each of them contains corresponding weight.
     out_folder - path to the folder, where to store output. You should create it
     return_viral - return contigs annotated as viral by virhunter (fasta format)
     """
-    assert Path(test_ds).exists(), f'{f} does not exist'
-    assert Path(nn_weights).exists(), f'{f} does not exist'
-    assert Path(rf_weights).exists(), f'{f} does not exist'
-    assert Path(out_folder).exists(), f'{f} does not exist'
+    assert Path(test_ds).exists(), f'{test_ds} does not exist'
+    assert Path(weights).exists(), f'{weights} does not exist'
+    Path(out_folder).mkdir(parents=True, exist_ok=True)
 
     dfs_fr = []
     dfs_cont = []
