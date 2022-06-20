@@ -16,6 +16,16 @@ train:
 predict:
     test_ds: test_installation/viruses.fasta
     weights: test_installation_out
-    out_folder: test_installation_out
+    out_path: test_installation_out
     n_cpus: 1
     return_viral: True
+
+prepare_ds_complex:
+    path_virus: test_installation/viruses.fasta
+    path_plant_genome: test_installation/host.fasta
+    path_plant_cds: test_installation/host.fasta
+    path_plant_chlt: test_installation/host.fasta
+    path_bact: test_installation/bacteria.fasta
+    out_path: test_installation_out
+    n_cpus: 10
+    random_seed: 5

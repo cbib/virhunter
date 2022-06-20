@@ -6,6 +6,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "5"
 os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
 # loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import tensorflow as tf
+print(tf.config.list_physical_devices('GPU'))
+
 import fire
 import yaml
 import tensorflow as tf
@@ -126,7 +129,7 @@ def subset_df(df, org, thr=0.8, final_df_size=1000):
     For RF classifier to learn from badly predicted viral fragments
     """
     if thr == 1.0:
-        df_1 = df.sample(n=final_df_size)
+        df = df.sample(n=final_df_size)
     else:
         df_1 = df.query(f'pred_{org}_5 <= {thr} | pred_{org}_7 <= {thr} | pred_{org}_10 <= {thr}')
         print(df_1.shape[0])
@@ -135,9 +138,12 @@ def subset_df(df, org, thr=0.8, final_df_size=1000):
             df_1 = df
         df_1 = df_1.sample(n=int(final_df_size/2))
         df_2 = df.query(f'pred_{org}_5 > {thr} & pred_{org}_7 > {thr} & pred_{org}_10 > {thr}')
+        if df_2.shape[0] < int(final_df_size/2):
+            print('too little good predictions')
+            df_2 = df
         df_2 = df_2.sample(n=int(final_df_size/2))
-        df_1 = df_1.append(df_2, sort=False)
-    return df_1
+        df = df_1.append(df_2, sort=False)
+    return df
 
 
 def load_ds(df, label, family=None,):

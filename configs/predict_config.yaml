@@ -1,6 +1,6 @@
 predict:
     test_ds: # path to the input file with contigs in fasta format
     weights: # folder containing weights for NN and RF modules trained on 500 and 1000 fragment lengths
-    out_folder: # where to save predictions
+    out_path: # where to save predictions
     n_cpus: # number of cpus you want to use
     return_viral: # (True/False) Fill in True if you want to recuperate contigs annotated as viral

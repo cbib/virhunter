@@ -137,9 +137,9 @@ def predict(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-    assert Path(test_ds).exists(), f'{test_ds} does not exist'
-    assert Path(weights).exists(), f'{weights} does not exist'
-    Path(out_folder).mkdir(parents=True, exist_ok=True)
+    assert Path(cf["predict"]["test_ds"]).exists(), f'{cf["predict"]["test_ds"]} does not exist'
+    assert Path(cf["predict"]["weights"]).exists(), f'{cf["predict"]["weights"]} does not exist'
+    Path(cf['predict']['out_path']).mkdir(parents=True, exist_ok=True)
 
     dfs_fr = []
     dfs_cont = []
@@ -160,20 +160,20 @@ def predict(config):
     df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
     df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
     df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_fr = Path(out_folder, f"{Path(cf['predict']['test_ds']).stem}_predicted_contig_fragments.csv")
+    pred_fr = Path(cf['predict']['out_path'], f"{Path(cf['predict']['test_ds']).stem}_predicted_contig_fragments.csv")
     df.to_csv(pred_fr)
 
     df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
     df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
     df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_contigs = Path(out_folder, f"{Path(cf['predict']['test_ds']).stem}_predicted_contigs.csv")
+    pred_contigs = Path(cf['predict']['out_path'], f"{Path(cf['predict']['test_ds']).stem}_predicted_contigs.csv")
     df.to_csv(pred_contigs)
 
     if cf["predict"]["return_viral"]:
         viral_ids = list(df[df["decision"] == "virus"]["id"])
         seqs_ = list(SeqIO.parse(cf['predict']['test_ds'], "fasta"))
         viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
-        SeqIO.write(viral_seqs, Path(out_folder, f"{Path(cf['predict']['test_ds']).stem}_viral_contigs.fasta"), 'fasta')
+        SeqIO.write(viral_seqs, Path(cf['predict']['out_path'], f"{Path(cf['predict']['test_ds']).stem}_viral_contigs.fasta"), 'fasta')
 
 
 if __name__ == '__main__':
