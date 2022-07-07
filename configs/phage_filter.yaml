@@ -1,0 +1,32 @@
+prepare_ds:
+    path_virus: /home/gsukhorukov/vir_db/virus_all_22-06-13.fasta
+    path_phages: /home/gsukhorukov/vir_db/bacteriophages_2022-05-20.fasta
+    out_path: test_installation_out/phage_filter
+    n_cpus: 10
+    random_seed: 5
+
+train:
+    ds_path: test_installation_out/phage_filter
+    out_path: test_installation_out/phage_filter
+    epochs: 10
+    n_cpus: 5
+    random_seed: 5
+
+predict:
+    test_ds:
+      - /home/gsukhorukov/real_test/n_r_rc/LIB1_TGCGGCGT-TACCGAGG-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/n_r_rc/LIB2_CATAATAC-CGTTAGAA-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/n_r_rc/LIB3_GATCTATC-AGCCTCAT-AH2C7TDRXY_L001 (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/grapevine_inextvir/TT2017-1_TAATGCGC-AGGATAGG (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/grapevine_inextvir/I30-2_CTGAAGCT-AGGCTATA (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/grapevine_inextvir/I30-2_TGACCA (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/grapevine_inextvir/I33_CAGATC (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/grapevine_inextvir/I33_CTGAAGCT-TCAGAGCC (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/grapevine_inextvir/TT2017-1_ATGTCA (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/sugar_beet_inextvir/305S (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/sugar_beet_inextvir/333A (paired, trimmed pairs) contig list.fa
+      - /home/gsukhorukov/real_test/sugar_beet_inextvir/428A (paired, trimmed pairs) contig list.fa
+    weights: test_installation_out/phage_filter
+    out_path: test_installation_out/phage_filter
+    n_cpus: 5
+    return_viral: False
