@@ -137,43 +137,52 @@ def predict(config):
     with open(config, "r") as yamlfile:
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-    assert Path(cf["predict"]["test_ds"]).exists(), f'{cf["predict"]["test_ds"]} does not exist'
+    test_ds = cf["predict"]["test_ds"]
+    if isinstance(test_ds, list):
+        pass
+    elif isinstance(test_ds, str):
+        test_ds = [test_ds]
+    else:
+        raise ValueError('test_ds was incorrectly assigned in the config file')
+
+    assert Path(test_ds[0]).exists(), f'{test_ds[0]} does not exist'
     assert Path(cf["predict"]["weights"]).exists(), f'{cf["predict"]["weights"]} does not exist'
     Path(cf['predict']['out_path']).mkdir(parents=True, exist_ok=True)
 
-    dfs_fr = []
-    dfs_cont = []
-    for l_ in 500, 1000:
-        df = predict_nn(
-            ds_path=cf["predict"]["test_ds"],
-            nn_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
-            length=l_,
-            n_cpus=cf["predict"]["n_cpus"],
-        )
-        df = predict_rf(
-            df=df,
-            rf_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
-        )
-        dfs_fr.append(df)
-        df = predict_contigs(df)
-        dfs_cont.append(df)
-    df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
-    df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
-    df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_fr = Path(cf['predict']['out_path'], f"{Path(cf['predict']['test_ds']).stem}_predicted_contig_fragments.csv")
-    df.to_csv(pred_fr)
+    for ts in test_ds:
+        dfs_fr = []
+        dfs_cont = []
+        for l_ in 500, 1000:
+            df = predict_nn(
+                ds_path=ts,
+                nn_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
+                length=l_,
+                n_cpus=cf["predict"]["n_cpus"],
+            )
+            df = predict_rf(
+                df=df,
+                rf_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
+            )
+            dfs_fr.append(df)
+            df = predict_contigs(df)
+            dfs_cont.append(df)
+        df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
+        df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
+        df = pd.concat([df_1000, df_500], ignore_index=True)
+        pred_fr = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted_contig_fragments.csv")
+        df.to_csv(pred_fr)
 
-    df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
-    df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
-    df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_contigs = Path(cf['predict']['out_path'], f"{Path(cf['predict']['test_ds']).stem}_predicted_contigs.csv")
-    df.to_csv(pred_contigs)
+        df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
+        df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
+        df = pd.concat([df_1000, df_500], ignore_index=True)
+        pred_contigs = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted_contigs.csv")
+        df.to_csv(pred_contigs)
 
-    if cf["predict"]["return_viral"]:
-        viral_ids = list(df[df["decision"] == "virus"]["id"])
-        seqs_ = list(SeqIO.parse(cf['predict']['test_ds'], "fasta"))
-        viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
-        SeqIO.write(viral_seqs, Path(cf['predict']['out_path'], f"{Path(cf['predict']['test_ds']).stem}_viral_contigs.fasta"), 'fasta')
+        if cf["predict"]["return_viral"]:
+            viral_ids = list(df[df["decision"] == "virus"]["id"])
+            seqs_ = list(SeqIO.parse(ts, "fasta"))
+            viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
+            SeqIO.write(viral_seqs, Path(cf['predict']['out_path'], f"{Path(ts).stem}_viral_contigs.fasta"), 'fasta')
 
 
 if __name__ == '__main__':

@@ -94,8 +94,19 @@ bash scripts/download_weights.sh
 Then you will need to fill `predict_config.yaml file`. If for example, you want to use the weights of the pretrained model for peach, 
 you should add in the `configs/predict_config.yaml` path `weights/peach`.
 
+NEW: Now, you can launch predictions for multiple test files at once. For that you need to change a bit the field test_ds in the
+`configs/predict_config.yaml`. All the predictions will be saved in the same output directory.
 
-The command to run predictions is then:
+```yaml
+predict:
+    test_ds:
+      - /path/to/test_ds_1
+      - /path/to/test_ds_2
+      - /path/to/test_ds_3  
+```
+
+
+The command to run predictions:
 
 ```shell
 python virhunter/predict.py configs/predict_config.yaml
