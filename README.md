@@ -114,16 +114,16 @@ python virhunter/predict.py configs/predict_config.yaml
 
 After prediction VirHunter produces two `csv` files and one optional `fasta` file:
 
-1. The first file ends with `_contig_fragments.csv`
+1. The first file ends with `_predicted_fragments.csv`
 It is an intermediate result containing predictions of the three CNN networks (probabilities of belonging to each of the virus/plant/bacteria class) and of the RF classifier for each fragment of every contig.
 
-2. The second file ends with `_predicted_contigs.csv`. 
+2. The second file ends with `_predicted.csv`. 
 This file contains final predictions for contigs calculated from the previous file. The field `id` stores the fasta header of a contig,
 `length` describes its length. Columns `# viral fragments`, `# plant fragments` and `# bacterial fragments` 
 store the number of fragments of the contig that received corresponding class prediction by the RF classifier. 
 Finally, column `decision` tells you about the final decision given by the VirHunter.
 
-3. The optional fasta file ends with `_viral_contigs.fasta`. It contains contigs that were predicted as viral by VirHunter.
+3. The optional fasta file ends with `_viral.fasta`. It contains contigs that were predicted as viral by VirHunter.
 To generate it you need to set flag `return_viral` to `True` in the config file.
 
 VirHunter discards from prediction contigs shorter than 750 bp. VirHunter model trained on 500 fragment size is used for contigs with length `750 < l < 1500`, while the model trained on fragment size 1000 is used for contigs with `1500 < l`.

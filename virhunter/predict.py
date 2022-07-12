@@ -77,7 +77,7 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
 
     # print('Starting sequence prediction')
     for model, s in zip([model_5.model(length), model_7.model(length), model_10.model(length)], [5, 7, 10]):
-        model.load_weights(Path(nn_weights_path, f"model_{s}.h5"))
+        model.load_weights(Path(nn_weights_path, f"model_{s}_{length}.h5"))
         prediction = model.predict([test_encoded, test_encoded_rc], batch_size)
         out_table[f"pred_plant_{s}"].extend(list(prediction[..., 0]))
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
@@ -90,7 +90,7 @@ def predict_rf(df, rf_weights_path):
     """
     Using predictions by predict_nn and weights of a trained RF classifier gives a single prediction for a fragment
     """
-    clf = load(Path(rf_weights_path, "RF.joblib"))
+    clf = load(Path(rf_weights_path, f"RF_{length}.joblib"))
     X = df[
         ["pred_plant_5", "pred_vir_5", "pred_plant_7", "pred_vir_7", "pred_plant_10", "pred_vir_10", ]]
     y_pred = clf.predict(X)
@@ -121,9 +121,11 @@ def predict_contigs(df):
     ]
     choices = ['virus', 'plant', 'bacteria']
     df['decision'] = np.select(conditions, choices, default='bacteria')
-    df = df.sort_values(by='length', ascending=False)
     df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
     df = df.rename(columns={'virus': '# viral fragments', 'bacteria': '# bacterial fragments', 'plant': '# plant fragments'})
+    df['# viral / # total'] = (df['# viral fragments'] / (df['# viral fragments'] + df['# bacterial fragments'] + df['# plant fragments'])).round(3)
+    df['# viral / # total * length'] = df['# viral / # total'] * length
+    df = df.sort_values(by='# viral / # total * length', ascending=False)
     return df
 
 
@@ -159,13 +161,13 @@ def predict(config):
         for l_ in 500, 1000:
             df = predict_nn(
                 ds_path=ts,
-                nn_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
+                nn_weights_path=cf["predict"]["weights"],
                 length=l_,
                 n_cpus=cf["predict"]["n_cpus"],
             )
             df = predict_rf(
                 df=df,
-                rf_weights_path=Path(cf["predict"]["weights"], f"{l_}"),
+                rf_weights_path=cf["predict"]["weights"],
             )
             dfs_fr.append(df)
             df = predict_contigs(df)
@@ -173,20 +175,20 @@ def predict(config):
         df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
         df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
         df = pd.concat([df_1000, df_500], ignore_index=True)
-        pred_fr = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted_contig_fragments.csv")
+        pred_fr = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted_fragments.csv")
         df.to_csv(pred_fr)
 
         df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
         df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
         df = pd.concat([df_1000, df_500], ignore_index=True)
-        pred_contigs = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted_contigs.csv")
+        pred_contigs = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted.csv")
         df.to_csv(pred_contigs)
 
         if cf["predict"]["return_viral"]:
             viral_ids = list(df[df["decision"] == "virus"]["id"])
             seqs_ = list(SeqIO.parse(ts, "fasta"))
             viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
-            SeqIO.write(viral_seqs, Path(cf['predict']['out_path'], f"{Path(ts).stem}_viral_contigs.fasta"), 'fasta')
+            SeqIO.write(viral_seqs, Path(cf['predict']['out_path'], f"{Path(ts).stem}_viral.fasta"), 'fasta')
 
 
 if __name__ == '__main__':

@@ -118,7 +118,7 @@ def train_nn(
                   epochs=1,
                   batch_size=batch_size,
                   verbose=2)
-        model.save_weights(Path(out_path, f"{model_}.h5"))
+        model.save_weights(Path(out_path, f"{model_}_{length}.h5"))
         print(f'finished training {model_} network')
 
 
@@ -209,7 +209,7 @@ def train_rf(nn_weights_path, ds_rf_path, out_path, length, n_cpus, random_seed)
                                     fract=0.2,
                                     rs=random_seed,)
     df_train = df_train.append(_, sort=False)
-    _ = fit_clf(df_train, Path(out_path, "RF.joblib"), random_seed)
+    _ = fit_clf(df_train, Path(out_path, f"RF_{length}.joblib"), random_seed)
 
 
 def train(config):
@@ -217,22 +217,20 @@ def train(config):
         cf = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
     assert Path(cf["train"]["ds_path"]).exists(), f'{cf["prepare_ds"]["ds_path"]} does not exist'
-
-    Path(cf["train"]["out_path"], "500").mkdir(parents=True, exist_ok=True)
-    Path(cf["train"]["out_path"], "1000").mkdir(parents=True, exist_ok=True)
+    Path(cf["train"]["out_path"]).mkdir(parents=True, exist_ok=True)
 
     for l_ in 500, 1000:
         train_nn(
-            ds_path=Path(cf["train"]["ds_path"], f"{l_}"),
-            out_path=Path(cf["train"]["out_path"], f"{l_}"),
+            ds_path=cf["train"]["ds_path"],
+            out_path=cf["train"]["out_path"],
             length=l_,
             epochs=cf["train"]["epochs"],
             random_seed=cf["train"]["random_seed"],
         )
         train_rf(
-            nn_weights_path=Path(cf["train"]["out_path"], f"{l_}"),
-            ds_rf_path=Path(cf["train"]["ds_path"], f"{l_}"),
-            out_path=Path(cf["train"]["out_path"], f"{l_}"),
+            nn_weights_path=cf["train"]["out_path"],
+            ds_rf_path=cf["train"]["ds_path"],
+            out_path=cf["train"]["out_path"],
             length=l_,
             n_cpus=cf["train"]["n_cpus"],
             random_seed=cf["train"]["random_seed"],

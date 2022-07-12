@@ -113,15 +113,14 @@ def prepare_ds(config):
     assert Path(cf["prepare_ds"]["path_plant"]).exists(), f'{cf["prepare_ds"]["path_plant"]} does not exist'
     assert Path(cf["prepare_ds"]["path_bact"]).exists(), f'{cf["prepare_ds"]["path_bact"]} does not exist'
 
-    Path(cf["prepare_ds"]["out_path"], "500").mkdir(parents=True, exist_ok=True)
-    Path(cf["prepare_ds"]["out_path"], "1000").mkdir(parents=True, exist_ok=True)
+    Path(cf["prepare_ds"]["out_path"]).mkdir(parents=True, exist_ok=True)
 
     for l_ in 500, 1000:
         prepare_ds_nn(
             path_virus=cf["prepare_ds"]["path_virus"],
             path_plant=cf["prepare_ds"]["path_plant"],
             path_bact=cf["prepare_ds"]["path_bact"],
-            out_path=Path(cf["prepare_ds"]["out_path"], f"{l_}"),
+            out_path=cf["prepare_ds"]["out_path"],
             fragment_length=l_,
             n_cpus=cf["prepare_ds"]["n_cpus"],
             random_seed=cf["prepare_ds"]["random_seed"],
@@ -130,7 +129,7 @@ def prepare_ds(config):
             path_virus=cf["prepare_ds"]["path_virus"],
             path_plant=cf["prepare_ds"]["path_plant"],
             path_bact=cf["prepare_ds"]["path_bact"],
-            out_path=Path(cf["prepare_ds"]["out_path"], f"{l_}"),
+            out_path=cf["prepare_ds"]["out_path"],
             fragment_length=l_,
             n_cpus=cf["prepare_ds"]["n_cpus"],
             random_seed=cf["prepare_ds"]["random_seed"],

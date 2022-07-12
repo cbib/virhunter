@@ -192,8 +192,7 @@ def prepare_ds_complex(config):
     assert Path(cf["prepare_ds_complex"]["path_plant_cds"]).exists(), f'{cf["prepare_ds_complex"]["path_plant_cds"]} does not exist'
     assert Path(cf["prepare_ds_complex"]["path_bact"]).exists(), f'{cf["prepare_ds_complex"]["path_bact"]} does not exist'
 
-    Path(cf["prepare_ds_complex"]["out_path"], "500").mkdir(parents=True, exist_ok=True)
-    Path(cf["prepare_ds_complex"]["out_path"], "1000").mkdir(parents=True, exist_ok=True)
+    Path(cf["prepare_ds_complex"]["out_path"]).mkdir(parents=True, exist_ok=True)
 
     for l_ in 500, 1000:
         prepare_ds_nn_complex(
@@ -202,7 +201,7 @@ def prepare_ds_complex(config):
             path_plant_cds=cf["prepare_ds_complex"]["path_plant_cds"],
             path_plant_chl=cf["prepare_ds_complex"]["path_plant_chl"],
             path_bact=cf["prepare_ds_complex"]["path_bact"],
-            out_path=Path(cf["prepare_ds_complex"]["out_path"], f"{l_}"),
+            out_path=cf["prepare_ds_complex"]["out_path"],
             fragment_length=l_,
             n_cpus=cf["prepare_ds_complex"]["n_cpus"],
             random_seed=cf["prepare_ds_complex"]["random_seed"],
@@ -213,7 +212,7 @@ def prepare_ds_complex(config):
             path_plant_cds=cf["prepare_ds_complex"]["path_plant_cds"],
             path_plant_chl=cf["prepare_ds_complex"]["path_plant_chl"],
             path_bact=cf["prepare_ds_complex"]["path_bact"],
-            out_path=Path(cf["prepare_ds_complex"]["out_path"], f"{l_}"),
+            out_path=cf["prepare_ds_complex"]["out_path"],
             fragment_length=l_,
             n_cpus=cf["prepare_ds_complex"]["n_cpus"],
             random_seed=cf["prepare_ds_complex"]["random_seed"],
