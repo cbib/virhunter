@@ -20,13 +20,18 @@ from joblib import load
 import psutil
 
 
-def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
+def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
     """
     Breaks down contigs into fragments
     and uses pretrained neural networks to give predictions for fragments
     """
-    pid = psutil.Process(os.getpid())
-    pid.cpu_affinity(range(n_cpus))
+    try:
+        pid = psutil.Process(os.getpid())
+        pid.cpu_affinity(range(n_cpus))
+    except AttributeError:
+        print("cpu allocation is not working properly. This will not impact the analysis results but may increase the runtime")
+
+
 
     print("loading sequences for prediction")
     try:
