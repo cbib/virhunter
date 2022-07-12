@@ -31,8 +31,6 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
     except AttributeError:
         print("cpu allocation is not working properly. This will not impact the analysis results but may increase the runtime")
 
-
-
     print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
@@ -86,6 +84,7 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
     # print('Exporting predictions to csv file')
     return pd.DataFrame(out_table)
+
 
 def predict_rf(df, rf_weights_path):
     """
