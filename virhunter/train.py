@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Credits: Grigorii Sukhorukov, Macha Nikolski
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "5"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
 # loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -60,7 +60,7 @@ def fetch_batches(fragments, fragments_rc, labels, random_seed, batch_size, trai
         batches.append(batch_idx)
         # updating starting coordinate for the i array, so that we do not lose any entries
         last_class = [x + y for x, y in zip(last_class, ind_n)]
-    print("Finished preparation of balanced batches")
+    # print("Finished preparation of balanced batches")
     assert train_fr < 1.0
     train_batches = batches[:int(len(batches) * train_fr)]
     val_batches = batches[int(len(batches) * train_fr):]
@@ -95,8 +95,7 @@ def train_nn(
         labels = f["labels"]
     except FileNotFoundError:
         raise Exception("dataset was not found. Change ds_path or launch prepare_ds script")
-    print(f'using {random_seed} random_seed in batch generation')
-    print(np.shape(fragments))
+    # print(f'using {random_seed} random_seed in batch generation')
     train_gen, val_gen = fetch_batches(fragments,
                                        fragments_rc,
                                        labels,
@@ -113,7 +112,7 @@ def train_nn(
                   epochs=epochs,
                   callbacks=callbacks,
                   batch_size=batch_size,
-                  verbose=1)
+                  verbose=2)
         # taking into account validation data
         model.fit(x=val_gen,
                   epochs=1,
@@ -230,7 +229,6 @@ def train(config):
             epochs=cf["train"]["epochs"],
             random_seed=cf["train"]["random_seed"],
         )
-        print("finished training NN")
         train_rf(
             nn_weights_path=Path(cf["train"]["out_path"], f"{l_}"),
             ds_rf_path=Path(cf["train"]["ds_path"], f"{l_}"),

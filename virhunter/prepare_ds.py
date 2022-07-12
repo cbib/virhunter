@@ -36,7 +36,6 @@ def prepare_ds_nn(
     if random_seed is None:
         random.seed(a=random_seed)
         random_seed = random.randrange(1000000)
-    print(f'starting generation using random seed {random_seed}')
     random.seed(a=random_seed)
 
     v_encoded, v_encoded_rc, v_labs, v_seqs, v_n_frags = pp.prepare_ds_fragmenting(
@@ -136,7 +135,7 @@ def prepare_ds(config):
             n_cpus=cf["prepare_ds"]["n_cpus"],
             random_seed=cf["prepare_ds"]["random_seed"],
         )
-        print(f"finished dataset preparation for {l_} fragment size\n")
+        print(f"finished dataset preparation for {l_} fragment size")
     print(f"NN and RF datasets are stored in {cf['prepare_ds']['out_path']}")
 
 

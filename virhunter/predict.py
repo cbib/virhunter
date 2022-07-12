@@ -67,19 +67,19 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
     test_encoded = np.concatenate(ray.get([pp.one_hot_encode.remote(s) for s in it]))
     it = pp.chunks(test_fragments_rc, int(len(test_fragments_rc) / n_cpus + 1))
     test_encoded_rc = np.concatenate(ray.get([pp.one_hot_encode.remote(s) for s in it]))
-    print('Encoding sequences finished')
-    print(
-        f"{np.shape(test_encoded)[0]} + {np.shape(test_encoded_rc)[0]} fragments generated")
+    # print('Encoding sequences finished')
+    # print(
+    #     f"{np.shape(test_encoded)[0]} + {np.shape(test_encoded_rc)[0]} fragments generated")
     ray.shutdown()
 
-    print('Starting sequence prediction')
+    # print('Starting sequence prediction')
     for model, s in zip([model_5.model(length), model_7.model(length), model_10.model(length)], [5, 7, 10]):
         model.load_weights(Path(nn_weights_path, f"model_{s}.h5"))
         prediction = model.predict([test_encoded, test_encoded_rc], batch_size)
         out_table[f"pred_plant_{s}"].extend(list(prediction[..., 0]))
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
-    print('Exporting predictions to csv file')
+    # print('Exporting predictions to csv file')
     return pd.DataFrame(out_table)
 
 def predict_rf(df, rf_weights_path):

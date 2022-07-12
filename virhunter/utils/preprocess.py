@@ -359,7 +359,7 @@ def prepare_ds_fragmenting(in_seq, label, label_int, fragment_length, sl_wind_st
     u_labs = labs[indices]
     u_seqs = [seqs_[i] for i in indices]
     assert (np.shape(u_encoded)[0] == np.shape(u_encoded_rc)[0])
-    print(f"Encoding {label} sequences finished")
+    # print(f"Encoding {label} sequences finished")
     # print(f"{np.shape(u_encoded)[0]} forward fragments generated")
     n_frags = np.shape(u_encoded)[0]
     ray.shutdown()
@@ -384,7 +384,7 @@ def prepare_ds_sampling(in_seqs, fragment_length, n_frags, label, label_int, ran
     labs = prepare_labels(frags, label=label_int, label_depth=3)
     seqs_ = label_fasta_fragments(seqs_, label=label)
     assert (np.shape(encoded)[0] == np.shape(encoded_rc)[0])
-    print(f"Encoding {label} sequences finished")
+    # print(f"Encoding {label} sequences finished")
     # print(f"{np.shape(encoded)[0]} forward fragments generated")
     ray.shutdown()
     return encoded, encoded_rc, labs, seqs_, n_frags
