@@ -7,16 +7,16 @@ VirHunter installation requires a Unix environment with [python 3.8](http://www.
 It was tested on Linux and macOS operating systems. 
 For now, VirHunter is still not fully compatible with M1 chip MacBook.
 
-In order to run VirHunter your installation should include conda. 
-If you are installing it for the first time, we suggest you to use 
+In order to run VirHunter you need to have git and conda already installed. 
+If you are installing conda for the first time, we suggest you to use 
 a lightweight [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 Otherwise, you can use pip for the dependencies' installation.
          
 ## Installation 
 
-The full installation process should take less than 15 minutes on a standard computer.
+To install VirHunter, you need to download it from github and then to install the dependancies.
 
-Then clone the repository from [github](https://github.com/cbib/virhunter)
+First, clone the repository from [github](https://github.com/cbib/virhunter)
 
 ```shell
 git clone https://github.com/cbib/virhunter.git
@@ -29,7 +29,7 @@ cd virhunter/
 ```
 
 
-## Installing dependencies with Conda
+### Installing dependencies with Conda
 
 First, you have to create the environment from the `envs/environment.yml` file. 
 The installation may take around 500 Mb of drive space. 
@@ -44,7 +44,7 @@ Second, activate the environment:
 conda activate virhunter
 ```
 
-## Installing dependencies with pip
+### Installing dependencies with pip
 
 If you don't have Conda installed in your system, you can install python dependencies via pip program:
 
@@ -58,7 +58,7 @@ Then if you have macOS you will need to install `wget` library to run some scrip
 brew install wget
 ```
 
-## Testing your installation of VirHunter
+### Testing your installation of VirHunter
 
 You can test that VirHunter was successfully installed on the toy dataset we provide. 
 IMPORTANT: the toy dataset is intended only to test that VirHunter has been well installed and all the scripts can be executed. 
@@ -77,25 +77,20 @@ bash scripts/test_installation.sh
 ## Using VirHunter for prediction
 
 To run VirHunter you can use the already pre-trained models or train VirHunter yourself (described in the next section).
-Pre-trained model weights are available for the following host plants: 
-- grapevine
-- tomato
-- sugar beet
-- peach
-- rice
-- carrot
-- lettuce
+Pre-trained model weights are already available for the multiple host plants. 
+You can download them using the `download_weights.sh` script.
 
-
-To use the model pretrained on one of the plants listed you will need first to download weights using `download_weights.sh` script.
 ```shell
 bash scripts/download_weights.sh 
 ```
-Then you will need to fill `predict_config.yaml file`. If for example, you want to use the weights of the pretrained model for peach, 
-you should add in the `configs/predict_config.yaml` path `weights/peach`.
 
-NEW: Now, you can launch predictions for multiple test files at once. For that you need to change a bit the field test_ds in the
-`configs/predict_config.yaml`. All the predictions will be saved in the same output directory.
+Before launching the prediction you will need to fill the `configs/predict_config.yaml` file. 
+If for example, you want to use the weights of the pretrained model for peach, 
+you should change the field `weights` in the `configs/predict_config.yaml` to `weights/peach`.
+
+VirHunter supports prediction for multiple test files at once. 
+For that you need to change a bit the field `test_ds` in the
+`configs/predict_config.yaml`. 
 
 ```yaml
 predict:
@@ -105,8 +100,7 @@ predict:
       - /path/to/test_ds_3  
 ```
 
-
-The command to run predictions:
+Once the config file is ready, you can start the prediction:
 
 ```shell
 python virhunter/predict.py configs/predict_config.yaml
@@ -118,15 +112,19 @@ After prediction VirHunter produces two `csv` files and one optional `fasta` fil
 It is an intermediate result containing predictions of the three CNN networks (probabilities of belonging to each of the virus/plant/bacteria class) and of the RF classifier for each fragment of every contig.
 
 2. The second file ends with `_predicted.csv`. 
-This file contains final predictions for contigs calculated from the previous file. The field `id` stores the fasta header of a contig,
-`length` describes its length. Columns `# viral fragments`, `# plant fragments` and `# bacterial fragments` 
-store the number of fragments of the contig that received corresponding class prediction by the RF classifier. 
-Finally, column `decision` tells you about the final decision given by the VirHunter.
+This file contains final predictions for contigs calculated from the previous file. 
+   - `id` - fasta header of a contig.
+   - `length` - length of the contig.
+   - `# viral fragments`, `# plant fragments` and `# bacterial fragments` - the number of fragments of the contig that received corresponding class prediction by the RF classifier.
+   - `decision` - class given by the VirHunter to the contig.
+   - `# viral / # total` - number of viral fragments divided by the total number of fragments of the contig.
+   - `'# viral / # total * length` - number of viral fragments divided by the total number of fragments of the contig multiplied by contig length. It is used to display the most relevant contigs first.
 
 3. The optional fasta file ends with `_viral.fasta`. It contains contigs that were predicted as viral by VirHunter.
 To generate it you need to set flag `return_viral` to `True` in the config file.
 
-VirHunter discards from prediction contigs shorter than 750 bp. VirHunter model trained on 500 fragment size is used for contigs with length `750 < l < 1500`, while the model trained on fragment size 1000 is used for contigs with `1500 < l`.
+`configs/predict_config.yaml` has a field `limit` that is used to discard contigs that are shorter than `limit` from prediction. 
+We tested limit of 750 in the paper and suggest using it as a default one. You can change the limit, but we do not guarantee VirHunter performance then.
 
 
 ## Training your own model
@@ -158,11 +156,11 @@ python virhunter/train.py configs/config.yaml
 ```
 Important to note, the suggested number of epochs for the training of neural networks is 10.
 
-## Complex dataset preparation
+### Complex dataset preparation
 If you want to prepare dataset that would have host oversampling for chloroplast and CDS (like it was done in the paper), 
 you can use `prepare_ds_complex.py` script. Compared to `prepare_ds.py` it will require paths to CDS and chlroplast containing fasta files.
 
-## VirHunter on GPU
+### Training VirHunter on GPU
 
 If you plan to train VirHunter on GPU, please use `environment_gpu.yml` or `requirements_gpu.txt` for dependencies installation.
 Those recipes were tested only on the Linux cluster with multiple GPUs.
