@@ -12,29 +12,21 @@ import tensorflow as tf
 import numpy as np
 from Bio import SeqIO
 import pandas as pd
-import ray
 from utils import preprocess as pp
 from pathlib import Path
 from models import model_5, model_7, model_10
 from joblib import load
-import psutil
 
 
-def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
+def predict_nn(ds_path, nn_weights_path, length, batch_size=256):
     """
     Breaks down contigs into fragments
     and uses pretrained neural networks to give predictions for fragments
     """
-    pid = psutil.Process(os.getpid())
-    pid.cpu_affinity(range(n_cpus))
-
-    print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
     except FileNotFoundError:
         raise Exception("test dataset was not found. Change ds variable")
-
-    print("generating viral fragments and labels")
     out_table = {
         "id": [],
         "length": [],
@@ -53,7 +45,6 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
         raise ValueError("All sequences were smaller than length of the model")
     test_fragments = []
     test_fragments_rc = []
-    ray.init(num_cpus=n_cpus, num_gpus=0, include_dashboard=False)
     for seq in seqs_:
         fragments_, fragments_rc, _ = pp.fragmenting([seq], length, max_gap=0.8,
                                                      sl_wind_step=int(length / 2))
@@ -63,30 +54,23 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=3, batch_size=256):
             out_table["id"].append(seq.id)
             out_table["length"].append(len(seq.seq))
             out_table["fragment"].append(j)
-    it = pp.chunks(test_fragments, int(len(test_fragments) / n_cpus + 1))
-    test_encoded = np.concatenate(ray.get([pp.one_hot_encode.remote(s) for s in it]))
-    it = pp.chunks(test_fragments_rc, int(len(test_fragments_rc) / n_cpus + 1))
-    test_encoded_rc = np.concatenate(ray.get([pp.one_hot_encode.remote(s) for s in it]))
-    print('Encoding sequences finished')
-    print(
-        f"{np.shape(test_encoded)[0]} + {np.shape(test_encoded_rc)[0]} fragments generated")
-    ray.shutdown()
+    test_encoded = pp.one_hot_encode(test_fragments)
+    test_encoded_rc = pp.one_hot_encode(test_fragments_rc)
 
-    print('Starting sequence prediction')
     for model, s in zip([model_5.model(length), model_7.model(length), model_10.model(length)], [5, 7, 10]):
-        model.load_weights(Path(nn_weights_path, f"model_{s}.h5"))
+        model.load_weights(Path(nn_weights_path, f"model_{s}_{length}.h5"))
         prediction = model.predict([test_encoded, test_encoded_rc], batch_size)
         out_table[f"pred_plant_{s}"].extend(list(prediction[..., 0]))
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
-    print('Exporting predictions to csv file')
     return pd.DataFrame(out_table)
 
-def predict_rf(df, rf_weights_path):
+
+def predict_rf(df, rf_weights_path, length):
     """
     Using predictions by predict_nn and weights of a trained RF classifier gives a single prediction for a fragment
     """
-    clf = load(Path(rf_weights_path, "RF.joblib"))
+    clf = load(Path(rf_weights_path, f"RF_{length}.joblib"))
     X = df[
         ["pred_plant_5", "pred_vir_5", "pred_plant_7", "pred_vir_7", "pred_plant_10", "pred_vir_10", ]]
     y_pred = clf.predict(X)
@@ -117,59 +101,72 @@ def predict_contigs(df):
     ]
     choices = ['virus', 'plant', 'bacteria']
     df['decision'] = np.select(conditions, choices, default='bacteria')
-    df = df.sort_values(by='length', ascending=False)
     df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
     df = df.rename(columns={'virus': '# viral fragments', 'bacteria': '# bacterial fragments', 'plant': '# plant fragments'})
+    df['# viral / # total'] = (df['# viral fragments'] / (df['# viral fragments'] + df['# bacterial fragments'] + df['# plant fragments'])).round(3)
+    df['# viral / # total * length'] = df['# viral / # total'] * df['length']
+    df = df.sort_values(by='# viral / # total * length', ascending=False)
     return df
 
 
-def predict(test_ds, weights, out_folder, return_viral):
+def predict(test_ds, weights, out_path, return_viral, limit):
+    """Predicts viral contigs from the fasta file
+
+    test_ds: path to the input file with contigs in fasta format (str or list of str)
+    weights: path to the folder containing weights for NN and RF modules trained on 500 and 1000 fragment lengths (str)
+    out_path: path to the folder to store predictions (str)
+    return_viral: whether to return contigs annotated as viral in separate fasta file (True/False)
+    limit: Do predictions only for contigs > l. We suggest l=750. (int)
     """
-    Predicts viral contigs from the fasta file
-    Arguments:
-    test_ds - path to the file with sequences for prediction (fasta format)
-    weights - path to the folder with weights of pretrained NN and RF weights.
-    This folder should contain to subfolders 500 and 1000. Each of them contains corresponding weight.
-    out_folder - path to the folder, where to store output. You should create it
-    return_viral - return contigs annotated as viral by virhunter (fasta format)
-    """
-    assert Path(test_ds).exists(), f'{test_ds} does not exist'
+    test_ds = test_ds
+    if isinstance(test_ds, list):
+        pass
+    elif isinstance(test_ds, str):
+        test_ds = [test_ds]
+    else:
+        raise ValueError('test_ds was incorrectly assigned in the config file')
+
+    assert Path(test_ds[0]).exists(), f'{test_ds[0]} does not exist'
     assert Path(weights).exists(), f'{weights} does not exist'
-    Path(out_folder).mkdir(parents=True, exist_ok=True)
+    assert isinstance(limit, int), 'limit should be an integer'
+    Path(out_path).mkdir(parents=True, exist_ok=True)
 
-    dfs_fr = []
-    dfs_cont = []
-    for l_ in 500, 1000:
-        df = predict_nn(
-            ds_path=test_ds,
-            nn_weights_path=Path(weights, f"{l_}"),
-            length=l_,
-            n_cpus=1,
-        )
-        df = predict_rf(
-            df=df,
-            rf_weights_path=Path(weights, f"{l_}"),
-        )
-        dfs_fr.append(df)
-        df = predict_contigs(df)
-        dfs_cont.append(df)
-    df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
-    df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
-    df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_fr = Path(out_folder, f"{Path(test_ds).stem}_predicted_contig_fragments.csv")
-    df.to_csv(pred_fr)
+    for ts in test_ds:
+        dfs_fr = []
+        dfs_cont = []
+        for l_ in 500, 1000:
+            print(f'starting prediction for {Path(ts).name} for fragment length {l_}')
+            df = predict_nn(
+                ds_path=ts,
+                nn_weights_path=weights,
+                length=l_,
+            )
+            df = predict_rf(
+                df=df,
+                rf_weights_path=weights,
+                length=l_,
+            )
+            dfs_fr.append(df)
+            df = predict_contigs(df)
+            dfs_cont.append(df)
+            print('prediction finished')
+        df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= limit) & (dfs_fr[0]['length'] < 1500)]
+        df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
+        df = pd.concat([df_1000, df_500], ignore_index=True)
+        pred_fr = Path(out_path, f"{Path(ts).stem}_predicted_fragments.csv")
+        df.to_csv(pred_fr)
 
-    df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
-    df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
-    df = pd.concat([df_1000, df_500], ignore_index=True)
-    pred_contigs = Path(out_folder, f"{Path(test_ds).stem}_predicted_contigs.csv")
-    df.to_csv(pred_contigs)
+        df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= limit) & (dfs_cont[0]['length'] < 1500)]
+        df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
+        df = pd.concat([df_1000, df_500], ignore_index=True)
+        pred_contigs = Path(out_path, f"{Path(ts).stem}_predicted.csv")
+        df.to_csv(pred_contigs)
 
-    if return_viral:
-        viral_ids = list(df[df["decision"] == "virus"]["id"])
-        seqs_ = list(SeqIO.parse(test_ds, "fasta"))
-        viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
-        SeqIO.write(viral_seqs, Path(out_folder, f"{Path(test_ds).stem}_viral_contigs.fasta"), 'fasta')
+        if return_viral:
+            viral_ids = list(df[df["decision"] == "virus"]["id"])
+            seqs_ = list(SeqIO.parse(ts, "fasta"))
+            viral_seqs = [s_ for s_ in seqs_ if s_.id in viral_ids]
+            SeqIO.write(viral_seqs, Path(out_path, f"{Path(ts).stem}_viral.fasta"), 'fasta')
 
 
 if __name__ == '__main__':

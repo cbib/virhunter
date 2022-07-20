@@ -1,6 +1,7 @@
 predict:
     test_ds: # path to the input file with contigs in fasta format
-    weights: # folder containing weights for NN and RF modules trained on 500 and 1000 fragment lengths
-    out_path: # where to save predictions
+    weights: # path to the folder containing weights for NN and RF modules trained on 500 and 1000 fragment lengths
+    out_path: # path to the folder to store predictions
     n_cpus: # number of cpus you want to use
-    return_viral: # (True/False) Fill in True if you want to recuperate contigs annotated as viral
+    return_viral: # (True/False) True if you want to recuperate contigs annotated as viral
+    limit: 750 # Do predictions only for contigs > l. We suggest default l=750, as it was tested in the paper

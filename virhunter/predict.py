@@ -31,13 +31,11 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
     except AttributeError:
         print("cpu allocation is not working properly. This will not impact the analysis results but may increase the runtime")
 
-    print("loading sequences for prediction")
     try:
         seqs_ = list(SeqIO.parse(ds_path, "fasta"))
     except FileNotFoundError:
         raise Exception("test dataset was not found. Change ds variable")
 
-    print("generating viral fragments and labels")
     out_table = {
         "id": [],
         "length": [],
@@ -70,23 +68,18 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
     test_encoded = np.concatenate(ray.get([pp.one_hot_encode.remote(s) for s in it]))
     it = pp.chunks(test_fragments_rc, int(len(test_fragments_rc) / n_cpus + 1))
     test_encoded_rc = np.concatenate(ray.get([pp.one_hot_encode.remote(s) for s in it]))
-    # print('Encoding sequences finished')
-    # print(
-    #     f"{np.shape(test_encoded)[0]} + {np.shape(test_encoded_rc)[0]} fragments generated")
     ray.shutdown()
 
-    # print('Starting sequence prediction')
     for model, s in zip([model_5.model(length), model_7.model(length), model_10.model(length)], [5, 7, 10]):
         model.load_weights(Path(nn_weights_path, f"model_{s}_{length}.h5"))
         prediction = model.predict([test_encoded, test_encoded_rc], batch_size)
         out_table[f"pred_plant_{s}"].extend(list(prediction[..., 0]))
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
-    # print('Exporting predictions to csv file')
     return pd.DataFrame(out_table)
 
 
-def predict_rf(df, rf_weights_path):
+def predict_rf(df, rf_weights_path, length):
     """
     Using predictions by predict_nn and weights of a trained RF classifier gives a single prediction for a fragment
     """
@@ -124,7 +117,7 @@ def predict_contigs(df):
     df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
     df = df.rename(columns={'virus': '# viral fragments', 'bacteria': '# bacterial fragments', 'plant': '# plant fragments'})
     df['# viral / # total'] = (df['# viral fragments'] / (df['# viral fragments'] + df['# bacterial fragments'] + df['# plant fragments'])).round(3)
-    df['# viral / # total * length'] = df['# viral / # total'] * length
+    df['# viral / # total * length'] = df['# viral / # total'] * df['length']
     df = df.sort_values(by='# viral / # total * length', ascending=False)
     return df
 
@@ -153,12 +146,14 @@ def predict(config):
 
     assert Path(test_ds[0]).exists(), f'{test_ds[0]} does not exist'
     assert Path(cf["predict"]["weights"]).exists(), f'{cf["predict"]["weights"]} does not exist'
+    assert isinstance(cf["predict"]["limit"], int), 'limit should be an integer'
     Path(cf['predict']['out_path']).mkdir(parents=True, exist_ok=True)
 
     for ts in test_ds:
         dfs_fr = []
         dfs_cont = []
         for l_ in 500, 1000:
+            print(f'starting prediction for {Path(ts).name} for fragment length {l_}')
             df = predict_nn(
                 ds_path=ts,
                 nn_weights_path=cf["predict"]["weights"],
@@ -168,17 +163,20 @@ def predict(config):
             df = predict_rf(
                 df=df,
                 rf_weights_path=cf["predict"]["weights"],
+                length=l_,
             )
             dfs_fr.append(df)
             df = predict_contigs(df)
             dfs_cont.append(df)
-        df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= 750) & (dfs_fr[0]['length'] < 1500)]
+            print('prediction finished')
+        limit = cf["predict"]["limit"]
+        df_500 = dfs_fr[0][(dfs_fr[0]['length'] >= limit) & (dfs_fr[0]['length'] < 1500)]
         df_1000 = dfs_fr[1][(dfs_fr[1]['length'] >= 1500)]
         df = pd.concat([df_1000, df_500], ignore_index=True)
         pred_fr = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted_fragments.csv")
         df.to_csv(pred_fr)
 
-        df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= 750) & (dfs_cont[0]['length'] < 1500)]
+        df_500 = dfs_cont[0][(dfs_cont[0]['length'] >= limit) & (dfs_cont[0]['length'] < 1500)]
         df_1000 = dfs_cont[1][(dfs_cont[1]['length'] >= 1500)]
         df = pd.concat([df_1000, df_500], ignore_index=True)
         pred_contigs = Path(cf['predict']['out_path'], f"{Path(ts).stem}_predicted.csv")
