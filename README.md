@@ -118,7 +118,7 @@ This file contains final predictions for contigs calculated from the previous fi
    - `# viral fragments`, `# plant fragments` and `# bacterial fragments` - the number of fragments of the contig that received corresponding class prediction by the RF classifier.
    - `decision` - class given by the VirHunter to the contig.
    - `# viral / # total` - number of viral fragments divided by the total number of fragments of the contig.
-   - `'# viral / # total * length` - number of viral fragments divided by the total number of fragments of the contig multiplied by contig length. It is used to display the most relevant contigs first.
+   - `# viral / # total * length` - number of viral fragments divided by the total number of fragments of the contig multiplied by contig length. It is used to display the most relevant contigs first.
 
 3. The optional fasta file ends with `_viral.fasta`. It contains contigs that were predicted as viral by VirHunter.
 To generate it you need to set flag `return_viral` to `True` in the config file.

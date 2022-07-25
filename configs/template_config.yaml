@@ -12,14 +12,14 @@ prepare_ds:
     path_bact: # path to fasta file with bacterial sequences
     out_path: # where to save training dataset for neural networks (in hdf5 format)
     n_cpus: # number of cpus you want to use
-    random_seed: # random seed for reshuffling dataset
+    random_seed: None # random seed. None is default for randomly selected seed (int)
 
 train:
     ds_path: # path to the dataset prepared with prepare_ds_nn.py
     out_path: # where to save weights of the trained neural networks
     epochs: # Number of epochs for each neural network to train
     n_cpus: # number of cpus you want to use
-    random_seed: # random seed for reshuffling of the training dataset
+    random_seed: None # random seed. None is default for randomly selected seed (int)
 
 prepare_ds_complex:
     path_virus: # path to fasta file with viral sequences
@@ -29,4 +29,4 @@ prepare_ds_complex:
     path_bact: # path to fasta file with bacterial sequences
     out_path: # where to save training dataset for neural networks (in hdf5 format)
     n_cpus: # number of cpus you want to use
-    random_seed: # random seed for reshuffling dataset
+    random_seed: None # random seed. None is default for randomly selected seed (int)
