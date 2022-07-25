@@ -15,7 +15,7 @@ train:
 
 predict:
     test_ds: test_installation/viruses.fasta
-    weights: test_installation_out/weights
+    weights: weights/generalistic #test_installation_out/weights
     out_path: test_installation_out/predictions
     n_cpus: 1
     return_viral: True
