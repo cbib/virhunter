@@ -7,7 +7,7 @@ os.environ["TF_XLA_FLAGS"] = "--tf_xla_cpu_global_jit"
 # loglevel : 0 all printed, 1 I not printed, 2 I and W not printed, 3 nothing printed
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
-print('number in the brackets corresponds to GPU being used; empty brackets - no GPU usage')
+print('number in the brackets corresponds to the GPU being used; empty brackets - no GPU usage')
 print(tf.config.list_physical_devices('GPU'))
 
 import fire

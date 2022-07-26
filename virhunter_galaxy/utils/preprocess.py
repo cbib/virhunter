@@ -6,7 +6,6 @@ import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-import ray
 import os
 import pathlib
 import math
@@ -176,7 +175,6 @@ def label_fasta_fragments(sequences, label):
     return labeled_fragments
 
 
-@ray.remote(max_calls=1)
 def one_hot_encode(fragments):
     """
     produces one-hot matrices from fragments and labels
@@ -247,7 +245,6 @@ def prepare_seq_lists(in_paths, n_fragments, weights=None,):
     Output:
     seqs_list - list with path to files with sequences
     n_fragments_list - number of fragments to be sampled
-    lists are zipped to work with ray iterators
     """
     # case when we recieve a single sequence file
     if type(in_paths) is str and in_paths.endswith(('.fna', '.fasta')):
@@ -284,11 +281,9 @@ def prepare_seq_lists(in_paths, n_fragments, weights=None,):
         return list(zip(seqs_list_all, n_fragments_list_all))
 
 
-@ray.remote(max_calls=1)
 def sample_fragments(seq_container, length, random_seed=1, limit=None, max_gap=0.05, sl_wind_step=None):
     """
     Randomly samples fragments from sequences in the list.
-    Is a bit cumbersome written to work with ray.
     Input:
     seq_container - list with each entry containing path to sequence,
     and n samples from this sequence.
@@ -337,20 +332,17 @@ def sample_fragments(seq_container, length, random_seed=1, limit=None, max_gap=0
         total_fragments_rc.extend(fragments_rc)
         total_seqs.extend(seqs)
         # print("sequence sampling done")
-    return [total_fragments, total_fragments_rc, total_seqs]
+    return total_fragments, total_fragments_rc, total_seqs
 
 
 def prepare_ds_fragmenting(in_seq, label, label_int, fragment_length, sl_wind_step, max_gap=0.05, n_cpus=1):
     if sl_wind_step is None:
         sl_wind_step = int(fragment_length / 2)
-    ray.init(num_cpus=n_cpus, num_gpus=0, include_dashboard=False)
     # generating viral fragments and labels
     seqs = list(SeqIO.parse(in_seq, "fasta"))
     frags, frags_rc, seqs_ = fragmenting(seqs, fragment_length, max_gap=max_gap, sl_wind_step=sl_wind_step)
-    it = chunks(frags, int(len(frags) / n_cpus + 1))
-    encoded = np.concatenate(ray.get([one_hot_encode.remote(s) for s in it]))
-    it = chunks(frags_rc, int(len(frags_rc) / n_cpus + 1))
-    encoded_rc = np.concatenate(ray.get([one_hot_encode.remote(s) for s in it]))
+    encoded = one_hot_encode(frags)
+    encoded_rc = one_hot_encode(frags_rc)
     labs = prepare_labels(frags, label=label_int, label_depth=3)
     seqs_ = label_fasta_fragments(seqs_, label=label)
     # subsetting to unique fragments
@@ -362,31 +354,21 @@ def prepare_ds_fragmenting(in_seq, label, label_int, fragment_length, sl_wind_st
     print(f"Encoding {label} sequences finished")
     # print(f"{np.shape(u_encoded)[0]} forward fragments generated")
     n_frags = np.shape(u_encoded)[0]
-    ray.shutdown()
     return u_encoded, u_encoded_rc, u_labs, u_seqs, n_frags
 
 
 def prepare_ds_sampling(in_seqs, fragment_length, n_frags, label, label_int, random_seed,  n_cpus=1, limit=100):
-    ray.init(num_cpus=n_cpus, num_gpus=0, include_dashboard=False)
     # generating plant fragments and labels
     seqs_list = prepare_seq_lists(in_seqs, n_frags)
-    it = chunks(seqs_list, int(len(seqs_list) / n_cpus + 1))
-    frs_ = ray.get(
-        [sample_fragments.remote(s, fragment_length, random_seed, limit=limit, max_gap=0.05) for s in it])
-    frags = sum([i[0] for i in frs_], [])
-    frags_rc = sum([i[1] for i in frs_], [])
-    seqs_ = sum([i[2] for i in frs_], [])
+    frags, frags_rc, seqs_ = sample_fragments.remote(seqs_list, fragment_length, random_seed, limit=limit, max_gap=0.05)
     frags, frags_rc, seqs_ = shuffle(frags, frags_rc, seqs_, random_state=random_seed, n_samples=int(n_frags))
-    it = chunks(frags, int(len(frags) / n_cpus + 1))
-    encoded = np.concatenate(ray.get([one_hot_encode.remote(s) for s in it]))
-    it = chunks(frags_rc, int(len(frags_rc) / n_cpus + 1))
-    encoded_rc = np.concatenate(ray.get([one_hot_encode.remote(s) for s in it]))
+    encoded = one_hot_encode(frags)
+    encoded_rc = one_hot_encode(frags_rc)
     labs = prepare_labels(frags, label=label_int, label_depth=3)
     seqs_ = label_fasta_fragments(seqs_, label=label)
     assert (np.shape(encoded)[0] == np.shape(encoded_rc)[0])
     print(f"Encoding {label} sequences finished")
     # print(f"{np.shape(encoded)[0]} forward fragments generated")
-    ray.shutdown()
     return encoded, encoded_rc, labs, seqs_, n_frags
 
 
