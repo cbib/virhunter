@@ -117,8 +117,7 @@ def predict_contigs(df):
     df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
     df = df.rename(columns={'virus': '# viral fragments', 'bacteria': '# bacterial fragments', 'plant': '# plant fragments'})
     df['# viral / # total'] = (df['# viral fragments'] / (df['# viral fragments'] + df['# bacterial fragments'] + df['# plant fragments'])).round(3)
-    df['# viral / # total * length'] = df['# viral / # total'] * df['length']
-    df = df.sort_values(by='# viral / # total * length', ascending=False)
+    df = df.sort_values(by='# viral fragments', ascending=False)
     return df
 
 

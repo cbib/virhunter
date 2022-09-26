@@ -357,21 +357,6 @@ def prepare_ds_fragmenting(in_seq, label, label_int, fragment_length, sl_wind_st
     return u_encoded, u_encoded_rc, u_labs, u_seqs, n_frags
 
 
-def prepare_ds_sampling(in_seqs, fragment_length, n_frags, label, label_int, random_seed,  n_cpus=1, limit=100):
-    # generating plant fragments and labels
-    seqs_list = prepare_seq_lists(in_seqs, n_frags)
-    frags, frags_rc, seqs_ = sample_fragments.remote(seqs_list, fragment_length, random_seed, limit=limit, max_gap=0.05)
-    frags, frags_rc, seqs_ = shuffle(frags, frags_rc, seqs_, random_state=random_seed, n_samples=int(n_frags))
-    encoded = one_hot_encode(frags)
-    encoded_rc = one_hot_encode(frags_rc)
-    labs = prepare_labels(frags, label=label_int, label_depth=3)
-    seqs_ = label_fasta_fragments(seqs_, label=label)
-    assert (np.shape(encoded)[0] == np.shape(encoded_rc)[0])
-    print(f"Encoding {label} sequences finished")
-    # print(f"{np.shape(encoded)[0]} forward fragments generated")
-    return encoded, encoded_rc, labs, seqs_, n_frags
-
-
 def storing_encoded(encoded, encoded_rc, labs, out_path, ):
     f = h5py.File(out_path, "w")
     f.create_dataset("fragments", data=encoded)

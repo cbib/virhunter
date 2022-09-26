@@ -5,6 +5,10 @@ weights/
 .weights/
 test_installation/
 test_installation_out/
+predictions/
+
+# working config file
+configs/config_work.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
