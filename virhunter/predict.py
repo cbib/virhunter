@@ -76,7 +76,7 @@ def predict_nn(ds_path, nn_weights_path, length, n_cpus=1, batch_size=256):
         out_table[f"pred_plant_{s}"].extend(list(prediction[..., 0]))
         out_table[f"pred_vir_{s}"].extend(list(prediction[..., 1]))
         out_table[f"pred_bact_{s}"].extend(list(prediction[..., 2]))
-    return pd.DataFrame(out_table)
+    return pd.DataFrame(out_table).round(3)
 
 
 def predict_rf(df, rf_weights_path, length):
