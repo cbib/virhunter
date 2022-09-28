@@ -106,7 +106,7 @@ def predict_contigs(df):
         .unstack(fill_value=0)
     )
     df = df.reset_index()
-    df = df.reindex(['length', 'id', 'virus', 'plant', 'bacteria'], axis=1)
+    df = df.reindex(['id', 'length', 'virus', 'plant', 'bacteria'], axis=1)
     conditions = [
         (df['virus'] > df['plant']) & (df['virus'] > df['bacteria']),
         (df['plant'] > df['virus']) & (df['plant'] > df['bacteria']),
@@ -114,7 +114,7 @@ def predict_contigs(df):
     ]
     choices = ['virus', 'plant', 'bacteria']
     df['decision'] = np.select(conditions, choices, default='bacteria')
-    df = df.loc[:, ['length', 'id', 'virus', 'plant', 'bacteria', 'decision']]
+    df = df.loc[:, ['id', 'length', 'virus', 'plant', 'bacteria', 'decision']]
     df = df.rename(columns={'virus': '# viral fragments', 'bacteria': '# bacterial fragments', 'plant': '# plant fragments'})
     df['# viral / # total'] = (df['# viral fragments'] / (df['# viral fragments'] + df['# bacterial fragments'] + df['# plant fragments'])).round(3)
     df = df.sort_values(by='# viral fragments', ascending=False)
