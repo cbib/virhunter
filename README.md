@@ -1,6 +1,11 @@
 # VirHunter
+![VirHunter logo](media/logo.png?raw=true "VirHunter logo")
+**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and a Random Forest Classifier to identify viruses in sequening datasets. More precisely, VirHunter classifies previously assembled contigs as viral, host and bacterial (contamination).
 
-**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and a Random Forest Classifier to identify viruses in sequening datasets. More precisely, VirHunter classifies previously assembled contigs as viral, host and bacterial (contamination). 
+## Useful Info
+* Recently we uploaded VirHunter to [Galaxy Europe](https://usegalaxy.eu/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/virhunter/virhunter/1.0.0+galaxy1). This means that now you can run VirHunter on your data without installation!
+* If you want to get rid of phage or fungi contamination please check out [Decontaminator](https://github.com/cbib/decontaminator). It goes well along with VirHunter!
+* Finally, [here](https://www.frontiersin.org/articles/10.3389/fbinf.2022.867111/full) is the original publication on VirHunter. If you are looking for more practical explanation check out this [presentation](media/virhunter_description.pdf).
 
 ## System Requirements
 VirHunter installation requires a Unix environment with [python 3.8](http://www.python.org/). 

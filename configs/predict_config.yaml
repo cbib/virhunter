@@ -1,7 +1,12 @@
 predict:
-    test_ds: # path to the input file with contigs in fasta format
-    weights: # path to the folder containing weights for NN and RF modules trained on 500 and 1000 fragment lengths
-    out_path: # path to the folder to store predictions
-    n_cpus: # number of cpus you want to use
-    return_viral: # (True/False) True if you want to recuperate contigs annotated as viral
+    test_ds: 
+        # - /Users/gregoruar/Desktop/data_for_Grigorij/directRNA-TYLCVnanofilt-racon2.fasta
+        # - /Users/gregoruar/Desktop/data_for_Grigorij/cDNA-PCR-TYLCV-rRNAnanofilt.fasta
+        # - /Users/gregoruar/Desktop/data_for_Grigorij/cDNA-PCR-TYLCVnanofilt.fasta
+        # - /Users/gregoruar/Desktop/data_for_Grigorij/directRNA-TYLCV-rRNAnanofilt.fasta
+        - /Users/gregoruar/Desktop/data_for_Grigorij/directRNA-TYLCVnanofilt.fasta 
+    weights: ./weights/tomato # path to the folder containing weights for NN and RF modules trained on 500 and 1000 fragment lengths
+    out_path: /Users/gregoruar/Desktop/out # path to the folder to store predictions
+    n_cpus: 2 # number of cpus you want to use
+    return_viral: True # (True/False) True if you want to recuperate contigs annotated as viral
     limit: 750 # Do predictions only for contigs > l. We suggest default l=750, as it was tested in the paper
