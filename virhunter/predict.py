@@ -106,7 +106,7 @@ def predict_contigs(df):
         .unstack(fill_value=0)
     )
     df = df.reset_index()
-    df = df.reindex(['id', 'length', 'virus', 'plant', 'bacteria'], axis=1)
+    df = df.reindex(['id', 'length', 'virus', 'plant', 'bacteria'], axis=1).fillna(value=0)
     conditions = [
         (df['virus'] > df['plant']) & (df['virus'] > df['bacteria']),
         (df['plant'] > df['virus']) & (df['plant'] > df['bacteria']),
