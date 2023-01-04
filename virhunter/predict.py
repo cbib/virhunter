@@ -164,8 +164,8 @@ def predict(config):
                 rf_weights_path=cf["predict"]["weights"],
                 length=l_,
             )
-            dfs_fr.append(df)
-            df = predict_contigs(df)
+            dfs_fr.append(df.round(3))
+            df = predict_contigs(df).round(3)
             dfs_cont.append(df)
             print('prediction finished')
         limit = cf["predict"]["limit"]
