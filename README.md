@@ -1,14 +1,14 @@
 # VirHunter
 ![VirHunter logo](media/logo.png?raw=true "VirHunter logo")
 
-**VirHunter** is a deep learning method that uses Convolutional Neural Networks (CNNs) and a Random Forest Classifier to identify viruses in sequening datasets. More precisely, VirHunter classifies previously assembled contigs as viral, host and bacterial (contamination).
+**VirHunter** is a tool that uses deep learning to identify viruses in plant virome sequencing datasets. In particular, VirHunter classifies previously assembled contigs into virus, host and bacteria classes.
 
 ## Useful Info
 * Recently we uploaded VirHunter to [Galaxy Europe](https://usegalaxy.eu/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/virhunter/virhunter/1.0.0+galaxy1). This means that now you can run VirHunter on your data without installation!
 * If you want to get rid of phage or fungi contamination please check out [Decontaminator](https://github.com/cbib/decontaminator). 
 It goes well along with VirHunter!
-* Finally, [here](https://www.frontiersin.org/articles/10.3389/fbinf.2022.867111/full) is the original publication on VirHunter. 
-If you are looking for a more practical explanation check out this [presentation](media/virhunter_description.pdf).
+* Finally, [here](https://www.frontiersin.org/articles/10.3389/fbinf.2022.867111/full) is the original publication on VirHunter. Please cite it, when you use VirHunter.
+If you are looking for a more practical explanation of VirHunter check out this [presentation](media/virhunter_description.pdf).
 
 ## System Requirements
 VirHunter installation requires a Unix environment with [python 3.8](http://www.python.org/). 
@@ -22,7 +22,7 @@ Otherwise, you can use pip for the dependencies' installation.
          
 ## Installation 
 
-To install VirHunter, you need to download it from github and then to install the dependancies.
+To install VirHunter, you need to download it from github and then to install the dependencies.
 
 First, clone the repository from [github](https://github.com/cbib/virhunter)
 
