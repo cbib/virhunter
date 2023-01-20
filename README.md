@@ -134,6 +134,14 @@ To generate it you need to set flag `return_viral` to `True` in the config file.
 We tested limit of 750 in the paper and suggest using it as a default one. You can change the limit, but we do not guarantee VirHunter performance then.
 
 
+## Available models
+We have trained 8 models of VirHunter:  _carrot_, _grapevine_, _lettuce_, _peach_, _rice_, _sugar beet_, _tomato_ and _generalistic_.
+The last model was prepared with a mixture of plants from _dicots_ and _monocots_ clades. 
+
+We recommend to use individual plant models, when the host plant of the virome belongs to the same family. 
+In other cases you can use _generalistic_ model. 
+
+
 ## Training your own model
 
 You can train your own model, for example for a specific host species. Before training, you need to collect sequence 
