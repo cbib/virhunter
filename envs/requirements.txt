@@ -11,3 +11,4 @@ fire==0.4.0
 PyYAML==5.4
 ray==1.1.0
 tensorflow==2.3.2
+protobuf==3.20.3
